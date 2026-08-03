@@ -1,0 +1,401 @@
+/* ─── Experience Section Container ─── */
+.experience-section {
+  position: relative;
+  min-height: 100vh;
+  background: #0d0d11;
+  padding: 140px 40px 160px;
+  overflow: hidden;
+  color: var(--color-text);
+  transition: background-color 0.5s ease;
+}
+
+/* ─── Background Watermark ─── */
+.exp-watermark {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: clamp(80px, 14vw, 220px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.03);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+}
+
+/* ─── Ambient Glows ─── */
+.exp-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(90px);
+  z-index: 0;
+}
+
+.exp-glow--1 {
+  top: 15%;
+  left: 10%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(255, 59, 48, 0.07) 0%, transparent 70%);
+}
+
+.exp-glow--2 {
+  bottom: 10%;
+  right: 10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 140, 66, 0.06) 0%, transparent 70%);
+}
+
+.exp-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ─── Header ─── */
+.exp-header {
+  text-align: center;
+  margin-bottom: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.exp-header-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.exp-icon-sparkle {
+  color: var(--color-accent);
+  animation: expSparkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes expSparkle {
+  from { transform: rotate(0deg) scale(0.9); }
+  to { transform: rotate(180deg) scale(1.1); }
+}
+
+.exp-header-title {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.5vw, 60px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.exp-header-sub {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-text-dim);
+  max-width: 540px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─── Timeline Architecture ─── */
+.experience-timeline {
+  position: relative;
+  padding: 20px 0;
+}
+
+/* Central Timeline Bar Background */
+.exp-timeline-line-bg {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+/* Central Timeline Bar Fill (GSAP scrub animated) */
+.exp-timeline-line-fill {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--color-accent), #ff8c42, var(--color-accent));
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: top center;
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.5);
+}
+
+/* Timeline Rows */
+.exp-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.exp-timeline-row {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.exp-row--left {
+  justify-content: flex-start;
+}
+
+.exp-row--right {
+  justify-content: flex-end;
+}
+
+/* Timeline Node (Center Circle) */
+.exp-node {
+  position: absolute;
+  left: 50%;
+  top: 32px;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 5;
+}
+
+.exp-node-inner {
+  width: 12px;
+  height: 12px;
+  margin: 4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px var(--color-accent);
+  position: relative;
+  z-index: 2;
+}
+
+.exp-node-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 59, 48, 0.5);
+  animation: nodePulse 2.4s infinite ease-out;
+}
+
+@keyframes nodePulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* ─── Experience Glass Card ─── */
+.exp-card {
+  position: relative;
+  width: calc(50% - 48px);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 32px;
+  backdrop-filter: blur(12px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.exp-card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.exp-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 59, 48, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 59, 48, 0.08);
+}
+
+.exp-card:hover .exp-card-glow {
+  opacity: 1;
+}
+
+/* Card Header */
+.exp-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.exp-role-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exp-type-badge {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ff8c42;
+  background: rgba(255, 140, 66, 0.1);
+  border: 1px solid rgba(255, 140, 66, 0.2);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.exp-role {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.exp-company {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-accent);
+  margin: 0;
+}
+
+.exp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-dim);
+}
+
+.exp-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Card Description & Highlights */
+.exp-description {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.65;
+  color: #a1a1aa;
+  margin: 0 0 20px;
+}
+
+.exp-highlights {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exp-highlight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-text-dim);
+  line-height: 1.5;
+}
+
+.exp-bullet {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+/* Skill Tags */
+.exp-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exp-skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.exp-card:hover .exp-skill-tag {
+  border-color: rgba(255, 59, 48, 0.25);
+  background: rgba(255, 59, 48, 0.05);
+}
+
+/* ─── Responsive Layout ─── */
+@media (max-width: 900px) {
+  .experience-section {
+    padding: 100px 20px 120px;
+  }
+
+  .exp-timeline-line-bg,
+  .exp-timeline-line-fill {
+    left: 20px;
+    transform: none;
+  }
+
+  .exp-node {
+    left: 20px;
+    transform: translateX(-50%);
+  }
+
+  .exp-card {
+    width: calc(100% - 50px);
+    margin-left: 50px;
+  }
+
+  .exp-row--left,
+  .exp-row--right {
+    justify-content: flex-start;
+  }
+
+  .exp-watermark {
+    font-size: 70px;
+  }
+}
