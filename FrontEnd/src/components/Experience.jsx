@@ -57,29 +57,159 @@ const EXPERIENCES = [
   },
 ];
 
+const DECOR_LINE_COUNT = 6;
+
 export default function Experience() {
   const sectionRef = useRef(null);
-  const lineRef = useRef(null);
+  const timelineRef = useRef(null);
+  const threadSvgRef = useRef(null);
+  const threadBgPathRef = useRef(null);
+  const threadFillPathRef = useRef(null);
+  const decorSvgRef = useRef(null);
 
   useEffect(() => {
+    let ro = null;
+
     const ctx = gsap.context(() => {
-      // ─── Timeline central vertical line fill on scroll ───
-      if (lineRef.current) {
-        gsap.fromTo(
-          lineRef.current,
-          { scaleY: 0 },
-          {
-            scaleY: 1,
+      let threadTween = null;
+      let decorTweens = [];
+
+      // ─── Single deterministic connecting thread ───
+      const buildThreadPath = (w, h) => {
+        const svg = threadSvgRef.current;
+        const bgPath = threadBgPathRef.current;
+        const fillPath = threadFillPathRef.current;
+        const timelineEl = timelineRef.current;
+        if (!svg || !bgPath || !fillPath || !timelineEl) return;
+
+        const isMobile = window.innerWidth <= 900;
+        const centerX = isMobile ? 20 : w / 2;
+        const amplitude = isMobile ? 0 : Math.min(14, w * 0.015);
+        const wavelength = 420;
+        const step = 16;
+
+        let d = "";
+        for (let y = 0; y <= h; y += step) {
+          const x = centerX + amplitude * Math.sin((y / wavelength) * Math.PI * 2);
+          d += y === 0 ? `M ${x.toFixed(2)} 0` : ` L ${x.toFixed(2)} ${y.toFixed(2)}`;
+        }
+        const lastX = centerX + amplitude * Math.sin((h / wavelength) * Math.PI * 2);
+        d += ` L ${lastX.toFixed(2)} ${h.toFixed(2)}`;
+
+        svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+        svg.setAttribute("preserveAspectRatio", "none");
+        bgPath.setAttribute("d", d);
+        fillPath.setAttribute("d", d);
+
+        if (threadTween) {
+          threadTween.scrollTrigger?.kill();
+          threadTween.kill();
+        }
+
+        const total = fillPath.getTotalLength();
+        if (!total) return;
+        gsap.set(fillPath, { strokeDasharray: total, strokeDashoffset: total });
+
+        threadTween = gsap.to(fillPath, {
+          strokeDashoffset: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: timelineEl,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.6,
+          },
+        });
+      };
+
+      // ─── Random decorative background threads — spread across fixed ───
+      // ─── width "slices" so they can never all land in one corner ───
+      const buildDecorLines = (w, h) => {
+        const svg = decorSvgRef.current;
+        const timelineEl = timelineRef.current;
+        if (!svg || !timelineEl) return;
+
+        svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+        svg.setAttribute("preserveAspectRatio", "none");
+
+        decorTweens.forEach((t) => t.scrollTrigger?.kill());
+        decorTweens.forEach((t) => t.kill());
+        decorTweens = [];
+
+        const paths = svg.querySelectorAll(".exp-decor-path");
+        const sliceW = w / paths.length;
+
+        paths.forEach((pathEl, i) => {
+          // each line gets its own horizontal slice + jitter within it,
+          // instead of pure random X across the whole width
+          const startX = sliceW * i + sliceW * (0.2 + Math.random() * 0.6);
+          const amplitude = 20 + Math.random() * 50;
+          const wavelength = 180 + Math.random() * 260;
+          const phase = Math.random() * Math.PI * 2;
+          const startY = h * (Math.random() * 0.3);
+          const spanY = h * (0.5 + Math.random() * 0.6);
+          const endY = Math.min(h, startY + spanY);
+          const step = 24;
+
+          let d = "";
+          for (let y = startY; y <= endY; y += step) {
+            const local = y - startY;
+            const x = startX + amplitude * Math.sin((local / wavelength) * Math.PI * 2 + phase);
+            d += y === startY ? `M ${x.toFixed(2)} ${y.toFixed(2)}` : ` L ${x.toFixed(2)} ${y.toFixed(2)}`;
+          }
+          if (!d) return;
+          pathEl.setAttribute("d", d);
+
+          const isAccent = i % 3 === 0;
+          pathEl.style.stroke = isAccent ? "var(--color-accent)" : "rgba(255,255,255,0.6)";
+          pathEl.style.opacity = String((isAccent ? 0.09 : 0.06) + Math.random() * 0.05);
+          pathEl.style.strokeWidth = `${1 + Math.random()}px`;
+
+          const drift = 28 + i * 10;
+          gsap.set(pathEl, { y: -drift });
+          const tween = gsap.to(pathEl, {
+            y: drift,
             ease: "none",
             scrollTrigger: {
-              trigger: ".experience-timeline",
-              start: "top 70%",
-              end: "bottom 60%",
-              scrub: true,
+              trigger: timelineEl,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.8 + i * 0.15,
             },
-          }
-        );
+          });
+          decorTweens.push(tween);
+        });
+      };
+
+      const buildAll = () => {
+        const timelineEl = timelineRef.current;
+        if (!timelineEl) return;
+        const rect = timelineEl.getBoundingClientRect();
+        const w = Math.round(rect.width);
+        const h = Math.round(rect.height);
+        // container hasn't actually laid out yet — skip, ResizeObserver
+        // will fire again once it has real dimensions
+        if (w < 50 || h < 50) return;
+
+        buildThreadPath(w, h);
+        buildDecorLines(w, h);
+        ScrollTrigger.refresh();
+      };
+
+      // ResizeObserver fires whenever the container's real size settles —
+      // covers late font loads, image loads, ScrollSmoother reflows,
+      // orientation changes — far more reliable than a load/rAF guess.
+      if (timelineRef.current) {
+        let debounce;
+        ro = new ResizeObserver(() => {
+          clearTimeout(debounce);
+          debounce = setTimeout(buildAll, 120);
+        });
+        ro.observe(timelineRef.current);
       }
+
+      // also build immediately in case layout is already stable
+      buildAll();
 
       // ─── Section Header animation ───
       gsap.from(".exp-header-label", {
@@ -166,7 +296,10 @@ export default function Experience() {
       );
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      if (ro) ro.disconnect();
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -194,10 +327,19 @@ export default function Experience() {
         </header>
 
         {/* Timeline Wrapper */}
-        <div className="experience-timeline">
-          {/* Vertical Progress Line */}
-          <div className="exp-timeline-line-bg" aria-hidden="true" />
-          <div className="exp-timeline-line-fill" ref={lineRef} aria-hidden="true" />
+        <div className="experience-timeline" ref={timelineRef}>
+          {/* Random decorative background threads — pure filler, z-index 0 */}
+          <svg className="exp-decor-svg" ref={decorSvgRef} aria-hidden="true">
+            {Array.from({ length: DECOR_LINE_COUNT }).map((_, i) => (
+              <path key={i} className="exp-decor-path" />
+            ))}
+          </svg>
+
+          {/* The single connecting thread — always behind cards (z-index: 1) */}
+          <svg className="exp-timeline-thread" ref={threadSvgRef} aria-hidden="true">
+            <path className="exp-timeline-thread-bg" ref={threadBgPathRef} />
+            <path className="exp-timeline-thread-fill" ref={threadFillPathRef} />
+          </svg>
 
           {/* Experience Items */}
           <div className="exp-cards-list">

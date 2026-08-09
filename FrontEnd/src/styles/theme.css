@@ -5,6 +5,10 @@
   --color-text: #edebe6;
   --color-text-dim: #6b6b6b;
   --color-accent: #ff3b30;
+  /* RGB form of accent colors so components can derive rgba(...) with alpha */
+  --color-accent-rgb: 255, 59, 48;
+  --color-accent-secondary: #ff8c42;
+  --color-accent-secondary-rgb: 255, 140, 66;
 
   --font-display: 'Archivo', 'Inter Tight', sans-serif;
   --font-mono: 'Space Grotesk', monospace;

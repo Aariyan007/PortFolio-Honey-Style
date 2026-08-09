@@ -296,6 +296,11 @@
   justify-content: center;
   padding: 140px 60px 140px 100px;
   overflow: hidden;
+  /* Override accent colors for this section to black & white theme */
+  --color-accent: #ffffff;
+  --color-accent-rgb: 255, 255, 255;
+  --color-accent-secondary: #ffffff;
+  --color-accent-secondary-rgb: 255, 255, 255;
 }
 
 /* ─── Scroll progress bar (left edge) ─── */
@@ -313,11 +318,11 @@
 .about-progress-fill {
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, var(--color-accent), #ff8c42);
+  background: linear-gradient(to bottom, var(--color-accent), var(--color-accent-secondary));
   border-radius: 1px;
   transform: scaleY(0);
   transform-origin: top center;
-  box-shadow: 0 0 12px rgba(255, 59, 48, 0.4);
+  box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.4);
 }
 
 /* ─── Watermark ─── */
@@ -346,7 +351,7 @@
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 59, 48, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--color-accent-rgb), 0.08) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
   filter: blur(60px);
@@ -473,12 +478,12 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 59, 48, 0.15) 15%,
-    rgba(255, 140, 66, 0.2) 50%,
-    rgba(255, 59, 48, 0.15) 85%,
+    rgba(var(--color-accent-rgb), 0.15) 15%,
+    rgba(var(--color-accent-secondary-rgb), 0.2) 50%,
+    rgba(var(--color-accent-rgb), 0.15) 85%,
     transparent 100%
   );
-  box-shadow: 0 0 8px rgba(255, 59, 48, 0.06);
+  box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.06);
 }
 
 .about-line--1 {
@@ -532,7 +537,7 @@
   right: 12%;
   width: 60px;
   height: 60px;
-  border: 2px solid rgba(255, 59, 48, 0.12);
+  border: 2px solid rgba(var(--color-accent-rgb), 0.12);
   border-radius: 50%;
 }
 
@@ -547,7 +552,7 @@
 .about-shape--cross::after {
   content: "";
   position: absolute;
-  background: rgba(255, 140, 66, 0.15);
+  background: rgba(var(--color-accent-secondary-rgb), 0.15);
 }
 
 .about-shape--cross::before {
@@ -572,8 +577,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 59, 48, 0.2);
-  box-shadow: 0 0 20px rgba(255, 59, 48, 0.15);
+  background: rgba(var(--color-accent-rgb), 0.2);
+  box-shadow: 0 0 20px rgba(var(--color-accent-rgb), 0.15);
 }
 
 .about-shape--square {
@@ -589,7 +594,7 @@
   left: 55%;
   width: 14px;
   height: 14px;
-  border: 1px solid rgba(255, 140, 66, 0.12);
+  border: 1px solid rgba(var(--color-accent-secondary-rgb), 0.12);
   transform: rotate(45deg);
 }
 
