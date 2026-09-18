@@ -1,0 +1,65 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+/* one-item-tall viewport; the reel slides behind it */
+.loader-window {
+  height: var(--loader-item-h, 1.9em);
+  overflow: hidden;
+  font-size: clamp(24px, 4vw, 42px);
+}
+
+.loader-reel {
+  display: flex;
+  flex-direction: column;
+  will-change: transform, filter;
+}
+
+.loader-item {
+  /* height must be identical for every item or the reel drifts off-center.
+     1.9em is roomy on purpose — Devanagari/Arabic have taller ascenders
+     and descenders than Latin and will clip in a tighter box. */
+  height: var(--loader-item-h, 1.9em);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-family: var(--font-display), "Noto Sans", "Noto Sans Devanagari",
+    "Noto Sans Arabic", "Noto Sans SC", "Noto Sans JP", "Noto Sans KR",
+    sans-serif;
+  color: #fff;
+  line-height: 1;
+}
+.loader-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loader-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.loader-underline {
+  display: block;
+  width: 60px;
+  height: 1px;
+  margin-top: 14px;
+  background: var(--color-text-dim, rgba(255, 255, 255, 0.5));
+  transform-origin: center;
+}

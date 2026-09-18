@@ -1,0 +1,38 @@
+export const GREETINGS_BY_LANG = [
+  { lang: "English", morning: "Good morning", evening: "Good evening", night: "Good night" },
+  { lang: "Spanish", morning: "Buenos días", evening: "Buenas tardes", night: "Buenas noches" },
+  { lang: "French", morning: "Bonjour", evening: "Bonsoir", night: "Bonne nuit" },
+  { lang: "German", morning: "Guten Morgen", evening: "Guten Abend", night: "Gute Nacht" },
+  { lang: "Italian", morning: "Buongiorno", evening: "Buonasera", night: "Buonanotte" },
+  { lang: "Portuguese", morning: "Bom dia", evening: "Boa tarde", night: "Boa noite" },
+  { lang: "Dutch", morning: "Goedemorgen", evening: "Goedenavond", night: "Goedenacht" },
+  { lang: "Swedish", morning: "God morgon", evening: "God kväll", night: "God natt" },
+  { lang: "Norwegian", morning: "God morgen", evening: "God kveld", night: "God natt" },
+  { lang: "Danish", morning: "Godmorgen", evening: "God aften", night: "Godnat" },
+  { lang: "Finnish", morning: "Hyvää huomenta", evening: "Hyvää iltaa", night: "Hyvää yötä" },
+  { lang: "Polish", morning: "Dzień dobry", evening: "Dobry wieczór", night: "Dobranoc" },
+  { lang: "Russian", morning: "Доброе утро", evening: "Добрый вечер", night: "Спокойной ночи" },
+  { lang: "Ukrainian", morning: "Доброго ранку", evening: "Доброго вечора", night: "На добраніч" },
+  { lang: "Czech", morning: "Dobré ráno", evening: "Dobrý večer", night: "Dobrou noc" },
+  { lang: "Slovak", morning: "Dobré ráno", evening: "Dobrý večer", night: "Dobrú noc" },
+  { lang: "Hungarian", morning: "Jó reggelt", evening: "Jó estét", night: "Jó éjszakát" },
+  { lang: "Romanian", morning: "Bună dimineața", evening: "Bună seara", night: "Noapte bună" },
+  { lang: "Greek", morning: "Καλημέρα", evening: "Καλησπέρα", night: "Καληνύχτα" },
+  { lang: "Turkish", morning: "Günaydın", evening: "İyi akşamlar", night: "İyi geceler" },
+  { lang: "Arabic", morning: "صباح الخير", evening: "مساء الخير", night: "تصبح على خير" },
+  { lang: "Hebrew", morning: "בוקר טוב", evening: "ערב טוב", night: "לילה טוב" },
+  { lang: "Persian", morning: "صبح بخیر", evening: "عصر بخیر", night: "شب بخیر" },
+  { lang: "Hindi", morning: "सुप्रभात", evening: "शुभ संध्या", night: "शुभ रात्रि" },
+  { lang: "Bengali", morning: "শুভ সকাল", evening: "শুভ সন্ধ্যা", night: "শুভ রাত্রি" },
+  { lang: "Tamil", morning: "காலை வணக்கம்", evening: "மாலை வணக்கம்", night: "இனிய இரவு" },
+  { lang: "Telugu", morning: "శుభోదయం", evening: "శుభ సాయంత్రం", night: "శుభ రాత్రి" },
+  { lang: "Malayalam", morning: "സുപ്രഭാതം", evening: "ശുഭ സന്ധ്യ", night: "ശുഭ രാത്രി" },
+  { lang: "Kannada", morning: "ಶುಭೋದಯ", evening: "ಶುಭ ಸಂಜೆ", night: "ಶುಭ ರಾತ್ರಿ" },
+  { lang: "Marathi", morning: "शुभ सकाळ", evening: "शुभ संध्याकाळ", night: "शुभ रात्री" },
+  { lang: "Gujarati", morning: "સુપ્રભાત", evening: "શુભ સાંજ", night: "શુભ રાત્રી" },
+  { lang: "Punjabi", morning: "ਸ਼ੁਭ ਸਵੇਰ", evening: "ਸ਼ੁਭ ਸ਼ਾਮ", night: "ਸ਼ੁਭ ਰਾਤ" },
+];
+
+export function getGreetingsForBucket(bucket) {
+  return GREETINGS_BY_LANG.map((g) => ({ lang: g.lang, text: g[bucket] }));
+}

@@ -9,50 +9,72 @@ gsap.registerPlugin(ScrollTrigger);
 const EXPERIENCES = [
   {
     id: "exp-1",
-    role: "Full-Stack Web Developer",
-    company: "Freelance & Independent Projects",
+    role: "Software Engineer Intern",
+    company: "Wipro",
     location: "India",
-    period: "2024 — Present",
-    type: "Remote / Contract",
+    period: "May 2026 — August 2026",
+    type: "Internship",
     description:
-      "Designing and architecting modern, high-performance web applications. Specialized in crafting bespoke UI animations, robust RESTful APIs, and responsive web platforms with ultra-smooth user experiences.",
-    skills: ["React", "Node.js", "Express", "MongoDB", "GSAP", "Tailwind CSS"],
+      "Worked on enterprise software solutions across Angular, .NET, Azure AD, Fortanix DSM, and IIS, building secure onboarding systems, middleware integrations, and dynamic deployment workflows.",
+    skills: [
+      "Angular 17",
+      ".NET 8",
+      "Azure AD",
+      "Fortanix DSM",
+      "JWT",
+      "AES",
+      "IIS"
+    ],
     highlights: [
-      "Built custom web solutions for clients with focus on fast page speed & SEO",
-      "Implemented complex GSAP scroll animations & interactive web experiences",
-      "Engineered full-stack applications with clean MVC backend architecture",
+      "Developed an embeddable onboarding widget using Angular 17 and .NET 8 for integration across host applications",
+      "Built a relevance-scored documentation and FAQ search system with Azure AD JWT authentication and role-based access",
+      "Engineered Fortanix DSM middleware and migrated static API keys to Azure Managed Identity for improved enterprise security",
+      "Implemented dynamic runtime configuration on IIS, enabling environment-specific updates without frontend rebuilds"
     ],
   },
   {
     id: "exp-2",
-    role: "Full-Stack Development Intern",
-    company: "Tech Innovation Labs",
-    location: "India",
-    period: "2024",
-    type: "Internship",
+    role: "Lead Web Developer",
+    company: "Google Developer Groups On Campus - MITS",
+    location: "Kochi, Kerala, India",
+    period: "Oct 2025 — Present",
+    type: "Club",
     description:
-      "Collaborated with cross-functional teams to build and optimize full-stack web modules, database schemas, and interactive front-end dashboards.",
-    skills: ["React", "JavaScript (ES6+)", "Node.js", "PostgreSQL", "Git", "REST APIs"],
+      "Leading technical initiatives and coordinating developer-focused events at MITS, managing teams and ensuring smooth execution of technical activities across the campus.",
+    skills: [
+      "Technical Leadership",
+      "Event Management",
+      "Team Coordination",
+      "Web Development",
+      "MERN Stack"
+    ],
     highlights: [
-      "Optimized front-end rendering performance reducing load times by 35%",
-      "Developed reusable React component libraries following modular design systems",
-      "Participated in daily agile standups, code reviews, and API documentation",
+      "Planned, coordinated, and managed technical events and developer activities conducted for the college community",
+      "Led student teams in organizing workshops, competitions, and hands-on technical sessions",
+      "Coordinated speakers, volunteers, logistics, and technical requirements to ensure smooth event execution",
+      "Collaborated with the organizing team to develop and execute new technical initiatives for students"
     ],
   },
   {
     id: "exp-3",
-    role: "Engineering Scholar & Developer",
-    company: "B.Tech Engineering Program",
-    location: "India",
-    period: "2022 — Present",
-    type: "Education & Projects",
+    role: "Technical Lead",
+    company: "Google Developer Groups On Campus - MITS",
+    location: "Kochi, Kerala, India",
+    period: "Jan 2025 — Oct 2025",
+    type: "Club",
     description:
-      "Currently pursuing B.Tech Degree in Computer Science / Engineering. Hands-on experience building software architecture, algorithms, data structures, and capstone full-stack systems.",
-    skills: ["Data Structures", "Algorithms", "System Design", "Web Tech", "Database Management"],
+      "Managed technical activities and supported the planning and execution of developer events and initiatives for the MITS student community.",
+    skills: [
+      "Technical Leadership",
+      "Event Coordination",
+      "Team Management",
+      "Project Management"
+    ],
     highlights: [
-      "Maintained top academic standing while leading engineering team projects",
-      "Created multiple full-stack capstone projects with real-time features",
-      "Active mentor in campus coding clubs & hackathons",
+      "Coordinated technical events and activities for students across the college",
+      "Managed volunteers and organizing teams during event planning and execution",
+      "Handled technical planning and on-ground coordination for developer-focused programs",
+      "Worked with team members to deliver engaging technical sessions and student activities"
     ],
   },
 ];
