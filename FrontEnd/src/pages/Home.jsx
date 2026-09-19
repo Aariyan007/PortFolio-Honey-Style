@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import "./Home.css";
 import Marquee from "../components/Marquee";
 import Experience from "../components/Experience";
+import ProjectsSection from "../components/Projects";
 import Loader from "../components/Loader";
 
 gsap.registerPlugin(SplitText, ScrollTrigger, ScrollSmoother);
@@ -25,8 +26,6 @@ export default function Home() {
   const heroTlRef = useRef(null);
   const [loaderDone, setLoaderDone] = useState(false);
 
-  // Effect 1 — hero entrance + hover ripple + cursor parallax.
-  // Cheap, runs immediately on mount, stays paused until the loader hands off.
   useEffect(() => {
     let removeListeners = () => { };
     let removeMouseMove = () => { };
@@ -42,7 +41,6 @@ export default function Home() {
 
       heroTlRef.current = tl;
 
-      // hover ripple on headline lines
       const lines = gsap.utils.toArray(".headline-line");
       const splits = lines.map((line) => new SplitText(line, { type: "words, chars" }));
       const enterHandlers = splits.map((split) => () => {
@@ -59,7 +57,6 @@ export default function Home() {
       removeListeners = () =>
         lines.forEach((line, i) => line.removeEventListener("mouseenter", enterHandlers[i]));
 
-      // cursor parallax on the video wrapper
       const quickX = gsap.quickTo(videoWrapRef.current, "x", { duration: 1.2, ease: "power3.out" });
       const quickY = gsap.quickTo(videoWrapRef.current, "y", { duration: 1.2, ease: "power3.out" });
       const handleMouseMove = (e) => {
@@ -79,11 +76,11 @@ export default function Home() {
     };
   }, []);
 
-  // Effect 2 — ScrollSmoother + every About/Experience ScrollTrigger.
-  // Gated on loaderDone so this heavy setup never runs while the loader's
-  // fast setTimeout loop is going — that contention was the actual lag.
   useEffect(() => {
     if (!loaderDone) return;
+
+    let removeProjectsCursorMove = () => { };
+    let removeProjectsCardHandlers = () => { };
 
     const smoother = ScrollSmoother.create({
       wrapper: wrapperRef.current,
@@ -201,6 +198,112 @@ export default function Home() {
         transformOrigin: "left center",
       });
 
+      gsap.from(".projects-eyebrow, .projects-title .title-line, .projects-intro", {
+        y: 40,
+        opacity: 0,
+        filter: "blur(6px)",
+        duration: 0.9,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".projects-section", start: "top 75%" },
+      });
+            // header underline draw
+      gsap.to(".projects-header-line", {
+        scaleX: 1,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".projects-section", start: "top 75%" },
+      });
+
+      // watermark + glow lines drift as the section scrolls by
+      gsap.fromTo(
+        ".projects-watermark",
+        { yPercent: 15, opacity: 0.5 },
+        {
+          yPercent: -15,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: { trigger: ".projects-section", start: "top bottom", end: "bottom top", scrub: true },
+        }
+      );
+
+      gsap.utils.toArray(".projects-glow-line").forEach((line, i) => {
+        const dir = i % 2 === 0 ? 1 : -1;
+        gsap.fromTo(
+          line,
+          { xPercent: dir * -15, opacity: 0 },
+          {
+            xPercent: dir * 15,
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: { trigger: ".projects-section", start: "top bottom", end: "bottom top", scrub: true },
+          }
+        );
+      });
+
+      gsap.utils.toArray(".project-card").forEach((card) => {
+        gsap.from(card, {
+          y: 60,
+          opacity: 0,
+          filter: "blur(6px)",
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: { trigger: card, start: "top 88%" },
+        });
+
+        const line = card.querySelector(".project-card-line");
+        gsap.fromTo(
+          line,
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: { trigger: card, start: "top 88%" },
+          }
+        );
+      });
+
+      const isTouch = matchMedia("(hover: none)").matches;
+      if (!isTouch) {
+        const cursor = document.querySelector(".projects-cursor");
+        if (cursor) {
+          gsap.set(cursor, { xPercent: -50, yPercent: -50, opacity: 0, scale: 0.6 });
+
+          const quickX = gsap.quickTo(cursor, "x", { duration: 0.5, ease: "power3" });
+          const quickY = gsap.quickTo(cursor, "y", { duration: 0.5, ease: "power3" });
+
+          const moveHandler = (e) => {
+            quickX(e.clientX);
+            quickY(e.clientY);
+          };
+          window.addEventListener("mousemove", moveHandler);
+          removeProjectsCursorMove = () => window.removeEventListener("mousemove", moveHandler);
+
+                    const bound = gsap.utils.toArray(".project-card").map((card) => {
+            const enter = () =>
+              gsap.to(cursor, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
+            const leave = () =>
+              gsap.to(cursor, { opacity: 0, scale: 0.6, duration: 0.3, ease: "power2.in" });
+            const move = (e) => {
+              const rect = card.getBoundingClientRect();
+              card.style.setProperty("--mx", `${((e.clientX - rect.left) / rect.width) * 100}%`);
+              card.style.setProperty("--my", `${((e.clientY - rect.top) / rect.height) * 100}%`);
+            };
+            card.addEventListener("mouseenter", enter);
+            card.addEventListener("mouseleave", leave);
+            card.addEventListener("mousemove", move);
+            return { card, enter, leave, move };
+          });
+          removeProjectsCardHandlers = () =>
+            bound.forEach(({ card, enter, leave, move }) => {
+              card.removeEventListener("mouseenter", enter);
+              card.removeEventListener("mouseleave", leave);
+              card.removeEventListener("mousemove", move);
+            });
+        }
+      }
+
       const scrollCue = document.querySelector(".hero-meta-scroll");
       if (scrollCue) {
         scrollCue.style.cursor = "pointer";
@@ -211,6 +314,8 @@ export default function Home() {
     });
 
     return () => {
+      removeProjectsCursorMove();
+      removeProjectsCardHandlers();
       smoother.kill();
       ctx.revert();
     };
@@ -224,6 +329,7 @@ export default function Home() {
   return (
     <>
       {!loaderDone && <Loader onFinish={handleLoaderFinish} />}
+      <div className="projects-cursor" aria-hidden="true">VIEW</div>
 
       <div id="smooth-wrapper" ref={wrapperRef}>
         <div id="smooth-content" ref={contentRef}>
@@ -265,26 +371,20 @@ export default function Home() {
               </h1>
             </main>
 
-            {/* Bottom marquee */}
             <div className="home-bottom-marquee">
               <Marquee items={MARQUEE_ITEMS} />
             </div>
           </div>
 
-          {/* ─── About Me — scroll-reveal section ─── */}
           <section className="about-section">
-            {/* Scroll progress bar */}
             <div className="about-progress" aria-hidden="true">
               <div className="about-progress-fill" />
             </div>
 
-            {/* Large watermark text */}
             <div className="about-watermark" aria-hidden="true">AARIYAN</div>
 
-            {/* Radial glow behind text */}
             <div className="about-glow" aria-hidden="true" />
 
-            {/* Glowing decorative lines */}
             <div className="about-lines" aria-hidden="true">
               <span className="about-line about-line--1" />
               <span className="about-line about-line--2" />
@@ -293,7 +393,6 @@ export default function Home() {
               <span className="about-line about-line--5" />
             </div>
 
-            {/* Floating geometric shapes */}
             <div className="about-shapes" aria-hidden="true">
               <span className="about-shape about-shape--ring" />
               <span className="about-shape about-shape--cross" />
@@ -310,71 +409,16 @@ export default function Home() {
                 </div>
                 <p className="about-reveal-text">
                   {[
-                    ["Hi,", false],
-                    ["I", false],
-                    ["am", false],
-                    ["Aariyan.", true],
-
-                    ["I", false],
-                    ["am", false],
-                    ["a", false],
-                    ["Computer", false],
-                    ["Science", false],
-                    ["engineer", false],
-                    ["who", false],
-                    ["builds", false],
-
-                    ["full-stack", true],
-                    ["systems,", true],
-                    ["AI", true],
-                    ["agents,", true],
-                    ["and", true],
-                    ["real-time", true],
-                    ["applications.", true],
-
-                    ["I", false],
-                    ["enjoy", false],
-                    ["working", false],
-                    ["across", false],
-                    ["the", false],
-                    ["stack,", false],
-                    ["from", false],
-
-                    ["React,", true],
-                    ["Node.js,", true],
-                    ["and", true],
-                    ["JavaScript", true],
-
+                    ["Hi,", false], ["I", false], ["am", false], ["Aariyan.", true],
+                    ["I", false], ["am", false], ["a", false], ["Computer", false], ["Science", false], ["engineer", false], ["who", false], ["builds", false],
+                    ["full-stack", true], ["systems,", true], ["AI", true], ["agents,", true], ["and", true], ["real-time", true], ["applications.", true],
+                    ["I", false], ["enjoy", false], ["working", false], ["across", false], ["the", false], ["stack,", false], ["from", false],
+                    ["React,", true], ["Node.js,", true], ["and", true], ["JavaScript", true],
                     ["to", false],
-
-                    ["Python,", true],
-                    ["FastAPI,", true],
-                    ["TensorFlow,", true],
-                    ["and", true],
-                    ["machine", true],
-                    ["learning.", true],
-
-                    ["I", false],
-                    ["also", false],
-                    ["like", false],
-                    ["breaking", false],
-                    ["down", false],
-                    ["hard", false],
-                    ["problems.", false],
-
-                    ["A lot of", true],
-                    ["LeetCode", true],
-                    ["problems", true],
-
-                    ["solved.", false],
-                    ["Always", false],
-                    ["curious", false],
-                    ["about", false],
-                    ["what", false],
-                    ["happens", false],
-                    ["under", false],
-                    ["the", false],
-                    ["hood.", false],
+                    ["Python,", true], ["FastAPI,", true], ["TensorFlow,", true], ["and", true], ["machine", true], ["learning.", true],
+                    ["I", false], ["also", false], ["like", false], ["breaking", false], ["down", false], ["hard", false], ["problems.", false],
+                    ["A lot of", true], ["LeetCode", true], ["problems", true],
+                    ["solved.", false], ["Always", false], ["curious", false], ["about", false], ["what", false], ["happens", false], ["under", false], ["the", false], ["hood.", false],
                   ].map(([word, accent], i) => (
                     <span
                       key={`about-word-${i}`}
@@ -386,7 +430,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Side stats */}
               <aside className="about-stats">
                 <div className="about-stat">
                   <span className="about-stat-value">21</span>
@@ -408,7 +451,8 @@ export default function Home() {
             </div>
           </section>
 
-          {/* ─── Experience Section ─── */}
+          <ProjectsSection />
+
           <Experience />
         </div>
       </div>
