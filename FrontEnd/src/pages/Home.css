@@ -677,3 +677,15 @@
     display: none;
   }
 }
+
+/* ── contact bleed: white curtain between dark & light worlds ── */
+.contact-bleed {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 120px;
+  background: #f0ede8;
+  transform-origin: top center;
+  transform: scaleY(0);
+  margin-top: -2px; /* ensure no gap */
+}

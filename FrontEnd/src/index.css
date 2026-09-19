@@ -14,4 +14,11 @@ body,
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* GSAP will scrub this from dark → white when Contact enters */
+  background-color: #141418;
+}
+
+/* smooth-wrapper needs a bg so no flash shows through */
+#smooth-wrapper {
+  background-color: #141418;
 }

@@ -8,6 +8,7 @@ import "./Home.css";
 import Marquee from "../components/Marquee";
 import Experience from "../components/Experience";
 import ProjectsSection from "../components/Projects";
+import Contact from "../components/Contact";
 import Loader from "../components/Loader";
 
 gsap.registerPlugin(SplitText, ScrollTrigger, ScrollSmoother);
@@ -207,7 +208,7 @@ export default function Home() {
         ease: "power3.out",
         scrollTrigger: { trigger: ".projects-section", start: "top 75%" },
       });
-            // header underline draw
+      // header underline draw
       gsap.to(".projects-header-line", {
         scaleX: 1,
         duration: 0.9,
@@ -227,19 +228,7 @@ export default function Home() {
         }
       );
 
-      gsap.utils.toArray(".projects-glow-line").forEach((line, i) => {
-        const dir = i % 2 === 0 ? 1 : -1;
-        gsap.fromTo(
-          line,
-          { xPercent: dir * -15, opacity: 0 },
-          {
-            xPercent: dir * 15,
-            opacity: 1,
-            ease: "none",
-            scrollTrigger: { trigger: ".projects-section", start: "top bottom", end: "bottom top", scrub: true },
-          }
-        );
-      });
+      // bg lines are now animated by continuous GSAP timelines inside Projects.jsx
 
       gsap.utils.toArray(".project-card").forEach((card) => {
         gsap.from(card, {
@@ -280,7 +269,7 @@ export default function Home() {
           window.addEventListener("mousemove", moveHandler);
           removeProjectsCursorMove = () => window.removeEventListener("mousemove", moveHandler);
 
-                    const bound = gsap.utils.toArray(".project-card").map((card) => {
+          const bound = gsap.utils.toArray(".project-card").map((card) => {
             const enter = () =>
               gsap.to(cursor, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
             const leave = () =>
@@ -303,6 +292,75 @@ export default function Home() {
             });
         }
       }
+
+      // ── whole-page dark → white world transition ──
+      // Animate the body background itself so the entire canvas fades
+      gsap.fromTo(
+        document.body,
+        { backgroundColor: "#141418" },
+        {
+          backgroundColor: "#f0ede8",
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".contact-section",
+            start: "top 80%",   // start fading as contact section enters viewport
+            end: "top -10%",    // fully white by the time contact is filling the screen
+            scrub: 0.8,
+          },
+        }
+      );
+
+      // Also transition the smooth-wrapper so there's no dark flash
+      gsap.fromTo(
+        "#smooth-wrapper",
+        { backgroundColor: "#141418" },
+        {
+          backgroundColor: "#f0ede8",
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".contact-section",
+            start: "top 80%",
+            end: "top -10%",
+            scrub: 0.8,
+          },
+        }
+      );
+
+      // contact section reveal animations
+      gsap.from(".contact-eyebrow", {
+        y: 24, opacity: 0, duration: 0.8, ease: "power3.out",
+        scrollTrigger: { trigger: ".contact-section", start: "top 75%" },
+      });
+
+      gsap.from(".contact-line", {
+        y: 60, opacity: 0, filter: "blur(6px)",
+        duration: 1, stagger: 0.12, ease: "power3.out",
+        scrollTrigger: { trigger: ".contact-headline", start: "top 82%" },
+      });
+
+      gsap.from(".contact-sub", {
+        y: 30, opacity: 0,
+        duration: 0.8, ease: "power3.out",
+        scrollTrigger: { trigger: ".contact-headline", start: "top 72%" },
+      });
+
+      gsap.from(".contact-email", {
+        y: 30, opacity: 0,
+        duration: 0.8, ease: "power3.out",
+        scrollTrigger: { trigger: ".contact-email", start: "top 88%" },
+      });
+
+      gsap.from(".contact-social-link", {
+        y: 20, opacity: 0, stagger: 0.08,
+        duration: 0.6, ease: "power2.out",
+        scrollTrigger: { trigger: ".contact-socials", start: "top 90%" },
+      });
+
+      gsap.from(".contact-footer", {
+        opacity: 0, y: 16,
+        duration: 0.6, ease: "power2.out",
+        scrollTrigger: { trigger: ".contact-footer", start: "top 98%" },
+      });
 
       const scrollCue = document.querySelector(".hero-meta-scroll");
       if (scrollCue) {
@@ -451,9 +509,11 @@ export default function Home() {
             </div>
           </section>
 
-          <ProjectsSection />
 
           <Experience />
+          <ProjectsSection />
+
+          <Contact />
         </div>
       </div>
     </>
