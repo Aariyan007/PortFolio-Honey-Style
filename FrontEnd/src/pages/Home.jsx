@@ -82,6 +82,8 @@ export default function Home() {
 
     let removeProjectsCursorMove = () => { };
     let removeProjectsCardHandlers = () => { };
+    let removeContactHoverListeners = () => { };
+    let removeContactMagnetic = () => { };
 
     const smoother = ScrollSmoother.create({
       wrapper: wrapperRef.current,
@@ -208,7 +210,7 @@ export default function Home() {
         ease: "power3.out",
         scrollTrigger: { trigger: ".projects-section", start: "top 75%" },
       });
-      // header underline draw
+
       gsap.to(".projects-header-line", {
         scaleX: 1,
         duration: 0.9,
@@ -216,7 +218,6 @@ export default function Home() {
         scrollTrigger: { trigger: ".projects-section", start: "top 75%" },
       });
 
-      // watermark + glow lines drift as the section scrolls by
       gsap.fromTo(
         ".projects-watermark",
         { yPercent: 15, opacity: 0.5 },
@@ -227,8 +228,6 @@ export default function Home() {
           scrollTrigger: { trigger: ".projects-section", start: "top bottom", end: "bottom top", scrub: true },
         }
       );
-
-      // bg lines are now animated by continuous GSAP timelines inside Projects.jsx
 
       gsap.utils.toArray(".project-card").forEach((card) => {
         gsap.from(card, {
@@ -294,7 +293,6 @@ export default function Home() {
       }
 
       // ── whole-page dark → white world transition ──
-      // Animate the body background itself so the entire canvas fades
       gsap.fromTo(
         document.body,
         { backgroundColor: "#141418" },
@@ -303,14 +301,13 @@ export default function Home() {
           ease: "none",
           scrollTrigger: {
             trigger: ".contact-section",
-            start: "top 80%",   // start fading as contact section enters viewport
-            end: "top -10%",    // fully white by the time contact is filling the screen
+            start: "top 80%",
+            end: "top -10%",
             scrub: 0.8,
           },
         }
       );
 
-      // Also transition the smooth-wrapper so there's no dark flash
       gsap.fromTo(
         "#smooth-wrapper",
         { backgroundColor: "#141418" },
@@ -325,6 +322,82 @@ export default function Home() {
           },
         }
       );
+
+      // ── contact section extras: watermark, glow, rule draw-in ──
+      gsap.to([".contact-rule--top", ".contact-rule--mid"], {
+        scaleX: 1,
+        duration: 1,
+        ease: "power3.out",
+        stagger: 0.15,
+        scrollTrigger: { trigger: ".contact-section", start: "top 85%" },
+      });
+
+      gsap.fromTo(
+        ".contact-watermark",
+        { yPercent: 20, opacity: 0 },
+        {
+          yPercent: -20,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: { trigger: ".contact-section", start: "top bottom", end: "bottom top", scrub: true },
+        }
+      );
+
+      gsap.fromTo(
+        ".contact-glow",
+        { scale: 0.7, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 1.4,
+          ease: "power2.out",
+          scrollTrigger: { trigger: ".contact-section", start: "top 70%" },
+        }
+      );
+
+      // headline hover ripple — same pattern as the hero headline
+      const contactLines = gsap.utils.toArray(".contact-line");
+      const contactSplits = contactLines.map((line) => new SplitText(line, { type: "words, chars" }));
+      const contactEnterHandlers = contactSplits.map((split) => () => {
+        gsap.to(split.chars, {
+          y: -8,
+          duration: 0.4,
+          stagger: { each: 0.02, from: "start" },
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1,
+        });
+      });
+      contactLines.forEach((line, i) => line.addEventListener("mouseenter", contactEnterHandlers[i]));
+      removeContactHoverListeners = () =>
+        contactLines.forEach((line, i) => line.removeEventListener("mouseenter", contactEnterHandlers[i]));
+
+      // magnetic arrows on the email link and social links — desktop/mouse only
+      if (!isTouch) {
+        const magneticEls = gsap.utils.toArray(".contact-email, .contact-social-link");
+        const magneticCleanups = magneticEls.map((el) => {
+          const arrow = el.querySelector(".contact-email-arrow, .contact-social-arrow");
+          if (!arrow) return () => { };
+          const quickX = gsap.quickTo(arrow, "x", { duration: 0.3, ease: "power3" });
+          const quickY = gsap.quickTo(arrow, "y", { duration: 0.3, ease: "power3" });
+          const move = (e) => {
+            const rect = el.getBoundingClientRect();
+            quickX((e.clientX - (rect.left + rect.width / 2)) * 0.25);
+            quickY((e.clientY - (rect.top + rect.height / 2)) * 0.25);
+          };
+          const leave = () => {
+            quickX(0);
+            quickY(0);
+          };
+          el.addEventListener("mousemove", move);
+          el.addEventListener("mouseleave", leave);
+          return () => {
+            el.removeEventListener("mousemove", move);
+            el.removeEventListener("mouseleave", leave);
+          };
+        });
+        removeContactMagnetic = () => magneticCleanups.forEach((fn) => fn());
+      }
 
       // contact section reveal animations
       gsap.from(".contact-eyebrow", {
@@ -374,6 +447,8 @@ export default function Home() {
     return () => {
       removeProjectsCursorMove();
       removeProjectsCardHandlers();
+      removeContactHoverListeners();
+      removeContactMagnetic();
       smoother.kill();
       ctx.revert();
     };
@@ -508,7 +583,6 @@ export default function Home() {
               </aside>
             </div>
           </section>
-
 
           <Experience />
           <ProjectsSection />

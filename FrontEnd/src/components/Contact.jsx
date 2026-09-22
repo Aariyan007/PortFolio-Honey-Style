@@ -1,15 +1,17 @@
 import "./Contact.css";
 
 const SOCIALS = [
-  { label: "GitHub",   href: "https://github.com/Aariyan007",  mono: "GH" },
-  { label: "LinkedIn", href: "https://linkedin.com/in/aariyan", mono: "LI" },
-  { label: "Twitter",  href: "https://twitter.com/aariyan007",  mono: "TW" },
+  { label: "GitHub",   href: "https://github.com/Aariyan007",          mono: "GH" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/aariyan-s/", mono: "LI" },
+  { label: "Twitter",  href: "https://twitter.com/aariyan007",         mono: "TW" },
 ];
 
 export default function Contact() {
   return (
     <section id="contact-section" className="contact-section">
       <div className="contact-grain" aria-hidden="true" />
+      <div className="contact-watermark" aria-hidden="true">HELLO</div>
+      <div className="contact-glow" aria-hidden="true" />
       <span className="contact-rule contact-rule--top" />
 
       <div className="contact-inner">
@@ -32,10 +34,10 @@ export default function Contact() {
 
         <a
           className="contact-email"
-          href="mailto:aariyan007@gmail.com"
+          href="mailto:aariyansunu28@gmail.com"
           aria-label="Send Aariyan an email"
         >
-          <span className="contact-email-text">aariyan007@gmail.com</span>
+          <span className="contact-email-text">aariyansunu28@gmail.com</span>
           <span className="contact-email-arrow" aria-hidden="true">↗</span>
         </a>
 
@@ -60,7 +62,7 @@ export default function Contact() {
 
       <footer className="contact-footer">
         <span className="contact-footer-name">AARIYAN — 2026</span>
-        <span className="contact-footer-copy">Designed &amp; built by hand. No templates.</span>
+        <span className="contact-footer-copy">Designed & built by hand. No templates.</span>
         <span className="contact-footer-loc">🇮🇳 INDIA</span>
       </footer>
     </section>
