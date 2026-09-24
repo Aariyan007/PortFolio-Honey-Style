@@ -41,6 +41,7 @@
   from {
     transform: scale(1);
   }
+
   to {
     transform: scale(1.08);
   }
@@ -53,13 +54,11 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.6) 0%,
-    rgba(0, 0, 0, 0.25) 30%,
-    rgba(0, 0, 0, 0.35) 60%,
-    rgba(0, 0, 0, 0.85) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.25) 30%,
+      rgba(0, 0, 0, 0.35) 60%,
+      rgba(0, 0, 0, 0.85) 100%);
 }
 
 /* vignette — darkens edges/corners, keeps center clear. */
@@ -177,9 +176,11 @@
   0% {
     box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
   }
+
   70% {
     box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
   }
@@ -190,11 +191,13 @@
 }
 
 @keyframes scrollBob {
+
   0%,
   100% {
     transform: translateY(0);
     opacity: 0.6;
   }
+
   50% {
     transform: translateY(4px);
     opacity: 1;
@@ -223,7 +226,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.6;
-  color: var(--color-text-dim);
+  color: white;
 }
 
 .headline {
@@ -475,14 +478,12 @@
   left: -10%;
   display: block;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(var(--color-accent-rgb), 0.15) 15%,
-    rgba(var(--color-accent-secondary-rgb), 0.2) 50%,
-    rgba(var(--color-accent-rgb), 0.15) 85%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(var(--color-accent-rgb), 0.15) 15%,
+      rgba(var(--color-accent-secondary-rgb), 0.2) 50%,
+      rgba(var(--color-accent-rgb), 0.15) 85%,
+      transparent 100%);
   box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.06);
 }
 
@@ -604,13 +605,16 @@
     padding: 100px 28px 80px;
     gap: 20px;
   }
+
   .intro-text {
     font-size: 13px;
     max-width: 340px;
   }
+
   .about-section {
     padding: 100px 28px;
   }
+
   .about-content {
     gap: 48px;
   }
@@ -621,12 +625,15 @@
     padding: 90px 20px 60px;
     gap: 16px;
   }
+
   .headline-line:first-child {
     font-size: 26px;
   }
+
   .headline-line:last-child {
     font-size: 14px;
   }
+
   .intro-text {
     font-size: 11px;
     max-width: 280px;
@@ -635,9 +642,11 @@
   .edge-label {
     display: none;
   }
+
   .frame-corners {
     inset: 12px;
   }
+
   .hero-meta {
     left: 16px;
     right: 16px;
@@ -698,5 +707,6 @@
   background: #f0ede8;
   transform-origin: top center;
   transform: scaleY(0);
-  margin-top: -2px; /* ensure no gap */
+  margin-top: -2px;
+  /* ensure no gap */
 }
