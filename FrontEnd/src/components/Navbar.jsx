@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollSmoother);
 function LinkedinIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13" {...props}>
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24 23.2 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 23.227 24 22.271 24 21.729V1.729C24 .774 23.2 0 22.225 0z" />
     </svg>
   );
 }
@@ -46,6 +46,55 @@ export default function Navbar() {
 
     return () => ctx.revert();
   }, []);
+
+  // ── Magnetic hover on nav links ──
+  useEffect(() => {
+    if (matchMedia("(hover: none)").matches) return;
+    const els = navRef.current?.querySelectorAll(".navbar-link, .navbar-cta");
+    if (!els?.length) return;
+
+    const cleanups = Array.from(els).map((el) => {
+      const qx = gsap.quickTo(el, "x", { duration: 0.4, ease: "power3" });
+      const qy = gsap.quickTo(el, "y", { duration: 0.4, ease: "power3" });
+
+      const move = (e) => {
+        const rect = el.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        qx(dx * 0.3);
+        qy(dy * 0.35);
+      };
+      const leave = () => { qx(0); qy(0); };
+      el.addEventListener("mousemove", move);
+      el.addEventListener("mouseleave", leave);
+      return () => {
+        el.removeEventListener("mousemove", move);
+        el.removeEventListener("mouseleave", leave);
+        gsap.set(el, { x: 0, y: 0 });
+      };
+    });
+
+    return () => cleanups.forEach((fn) => fn());
+  }, []);
+
+  // ── Hide navbar on scroll-down, show on scroll-up ──
+  useEffect(() => {
+    let lastScroll = 0;
+    const handleScroll = () => {
+      const nav = navRef.current;
+      if (!nav) return;
+      const y = window.scrollY || document.documentElement.scrollTop;
+      if (y > lastScroll && y > 100) {
+        nav.classList.add("navbar--hidden");
+      } else {
+        nav.classList.remove("navbar--hidden");
+      }
+      lastScroll = y;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
 
   useEffect(() => {
     if (!contactOpen) return;

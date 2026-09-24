@@ -38,7 +38,7 @@
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(90px);
+  filter: blur(50px);
   z-index: 0;
 }
 
@@ -404,6 +404,71 @@
 
   .exp-watermark {
     font-size: 70px;
+  }
+}
+
+@media (max-width: 700px) {
+  .experience-section {
+    padding: 80px 16px 80px;
+  }
+
+  .exp-container {
+    padding: 0;
+  }
+
+  .exp-header-title {
+    font-size: clamp(28px, 7vw, 42px);
+  }
+
+  .exp-watermark {
+    display: none;
+  }
+
+  .exp-glow {
+    display: none;
+  }
+
+  .exp-card {
+    width: calc(100% - 40px);
+    margin-left: 40px;
+    padding: 20px 16px;
+  }
+
+  .exp-node {
+    left: 16px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .exp-node-inner {
+    width: 6px;
+    height: 6px;
+  }
+
+  .exp-card-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .exp-role {
+    font-size: 18px;
+  }
+
+  .exp-description {
+    font-size: 13px;
+  }
+
+  .exp-highlights {
+    font-size: 12px;
+  }
+
+  .exp-skill-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .exp-decor-svg {
+    display: none;
   }
 }
 /* ─── Random decorative background threads ─── */

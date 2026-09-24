@@ -354,7 +354,7 @@
   background: radial-gradient(circle, rgba(var(--color-accent-rgb), 0.08) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
-  filter: blur(60px);
+  filter: blur(40px);
 }
 
 /* ─── Content layout ─── */
@@ -366,7 +366,7 @@
   gap: 80px;
   max-width: 1100px;
   width: 100%;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
 .about-inner {
@@ -414,7 +414,7 @@
 .about-reveal-word {
   display: inline-block;
   white-space: pre;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
 .text-accent {
@@ -599,12 +599,37 @@
 }
 
 /* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .hero {
+    padding: 100px 28px 80px;
+    gap: 20px;
+  }
+  .intro-text {
+    font-size: 13px;
+    max-width: 340px;
+  }
+  .about-section {
+    padding: 100px 28px;
+  }
+  .about-content {
+    gap: 48px;
+  }
+}
+
 @media (max-width: 700px) {
+  .hero {
+    padding: 90px 20px 60px;
+    gap: 16px;
+  }
   .headline-line:first-child {
-    font-size: 30px;
+    font-size: 26px;
   }
   .headline-line:last-child {
-    font-size: 15px;
+    font-size: 14px;
+  }
+  .intro-text {
+    font-size: 11px;
+    max-width: 280px;
   }
 
   .edge-label {
@@ -614,10 +639,10 @@
     inset: 12px;
   }
   .hero-meta {
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    font-size: 10px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    font-size: 9px;
   }
 
   .home-bottom-marquee .marquee-section {
@@ -625,18 +650,18 @@
   }
 
   .about-section {
-    padding: 80px 24px;
+    padding: 80px 20px;
   }
 
   .about-content {
     flex-direction: column;
-    gap: 48px;
+    gap: 36px;
   }
 
   .about-stats {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 24px;
+    gap: 20px;
   }
 
   .about-reveal-text {
@@ -648,35 +673,21 @@
   }
 
   .about-watermark {
-    font-size: 80px;
+    font-size: 60px;
   }
-}
-.projects-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 50;
-  pointer-events: none;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: #fff;
-  color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  mix-blend-mode: difference;
-}
 
-@media (max-width: 700px) {
-  .projects-cursor {
+  /* hide decorative shapes and lines on mobile for perf */
+  .about-shapes,
+  .about-lines {
     display: none;
   }
+
+  .about-glow {
+    width: 280px;
+    height: 280px;
+  }
 }
+
 
 /* ── contact bleed: white curtain between dark & light worlds ── */
 .contact-bleed {

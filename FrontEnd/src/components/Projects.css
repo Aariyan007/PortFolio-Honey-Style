@@ -175,6 +175,23 @@
   padding-left: 12px;
 }
 
+.pside-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.pside-github:hover {
+  color: var(--color-accent, #ff3b30);
+}
+
 /* — stats block — */
 .pstats-block {
   display: flex;
@@ -309,8 +326,9 @@
   overflow: hidden;
   background: rgba(255, 255, 255, 0.018);
   transform-style: preserve-3d;
-  will-change: transform;
   transition: border-color 0.35s ease;
+  cursor: pointer;
+  contain: layout style paint;
 }
 
 /* ghost numeral */
@@ -388,7 +406,7 @@
 }
 
 @media (hover: hover) {
-  .project-card { cursor: none; }
+  .project-card { cursor: pointer; }
 }
 
 /* ── CARD INTERNALS ── */

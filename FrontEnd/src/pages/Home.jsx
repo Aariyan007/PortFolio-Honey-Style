@@ -10,6 +10,8 @@ import Experience from "../components/Experience";
 import ProjectsSection from "../components/Projects";
 import Contact from "../components/Contact";
 import Loader from "../components/Loader";
+import CustomCursor from "../components/CustomCursor";
+import ScrollProgress from "../components/ScrollProgress";
 
 gsap.registerPlugin(SplitText, ScrollTrigger, ScrollSmoother);
 
@@ -36,7 +38,7 @@ export default function Home() {
 
       tl.from(videoRef.current, { opacity: 0, duration: 1.6 })
         .from(".intro-text", { opacity: 0, y: -15, duration: 0.8 }, "-=1")
-        .from(".headline-line", { y: 80, opacity: 0, filter: "blur(8px)", duration: 1, stagger: 0.15 }, "-=0.6")
+        .from(".headline-line", { y: 80, opacity: 0, duration: 1, stagger: 0.15 }, "-=0.6")
         .from(".frame-corners .corner", { opacity: 0, scale: 0.5, duration: 0.6, stagger: 0.05 }, "-=0.4")
         .from([".edge-label", ".hero-meta"], { opacity: 0, duration: 0.8 }, "-=0.3");
 
@@ -60,14 +62,23 @@ export default function Home() {
 
       const quickX = gsap.quickTo(videoWrapRef.current, "x", { duration: 1.2, ease: "power3.out" });
       const quickY = gsap.quickTo(videoWrapRef.current, "y", { duration: 1.2, ease: "power3.out" });
+      // RAF-throttled hero parallax
+      let heroRafId = 0;
       const handleMouseMove = (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 2;
-        const y = (e.clientY / window.innerHeight - 0.5) * 2;
-        quickX(x * 20);
-        quickY(y * 12);
+        if (heroRafId) return;
+        heroRafId = requestAnimationFrame(() => {
+          const x = (e.clientX / window.innerWidth - 0.5) * 2;
+          const y = (e.clientY / window.innerHeight - 0.5) * 2;
+          quickX(x * 20);
+          quickY(y * 12);
+          heroRafId = 0;
+        });
       };
-      window.addEventListener("mousemove", handleMouseMove);
-      removeMouseMove = () => window.removeEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mousemove", handleMouseMove, { passive: true });
+      removeMouseMove = () => {
+        window.removeEventListener("mousemove", handleMouseMove);
+        cancelAnimationFrame(heroRafId);
+      };
     });
 
     return () => {
@@ -80,15 +91,13 @@ export default function Home() {
   useEffect(() => {
     if (!loaderDone) return;
 
-    let removeProjectsCursorMove = () => { };
-    let removeProjectsCardHandlers = () => { };
     let removeContactHoverListeners = () => { };
     let removeContactMagnetic = () => { };
 
     const smoother = ScrollSmoother.create({
       wrapper: wrapperRef.current,
       content: contentRef.current,
-      smooth: 1.5,
+      smooth: 1.0,
       effects: true,
       smoothTouch: 0.1,
     });
@@ -108,10 +117,9 @@ export default function Home() {
 
       const aboutWords = gsap.utils.toArray(".about-reveal-word");
       if (aboutWords.length) {
-        gsap.set(aboutWords, { opacity: 0.1, filter: "blur(4px)", y: 12 });
+        gsap.set(aboutWords, { opacity: 0.1, y: 12 });
         gsap.to(aboutWords, {
           opacity: 1,
-          filter: "blur(0px)",
           y: 0,
           stagger: 0.05,
           ease: "none",
@@ -122,7 +130,6 @@ export default function Home() {
       gsap.to(".about-content", {
         opacity: 0,
         y: -60,
-        filter: "blur(10px)",
         ease: "none",
         scrollTrigger: { trigger: ".about-section", start: "bottom 80%", end: "bottom 25%", scrub: true },
       });
@@ -151,7 +158,8 @@ export default function Home() {
         }
       );
 
-      gsap.utils.toArray(".about-shape").forEach((shape, i) => {
+      // Only animate first 3 shapes for perf (each gets its own scrub ScrollTrigger)
+      gsap.utils.toArray(".about-shape").slice(0, 3).forEach((shape, i) => {
         gsap.fromTo(
           shape,
           { y: 60 + i * 20, rotation: -15 + i * 10, opacity: 0 },
@@ -204,7 +212,6 @@ export default function Home() {
       gsap.from(".projects-eyebrow, .projects-title .title-line, .projects-intro", {
         y: 40,
         opacity: 0,
-        filter: "blur(6px)",
         duration: 0.9,
         stagger: 0.1,
         ease: "power3.out",
@@ -229,68 +236,39 @@ export default function Home() {
         }
       );
 
+      // Batch card entrance: single ScrollTrigger per card, no blur
       gsap.utils.toArray(".project-card").forEach((card) => {
-        gsap.from(card, {
-          y: 60,
-          opacity: 0,
-          filter: "blur(6px)",
-          duration: 0.9,
-          ease: "power3.out",
+        const line = card.querySelector(".project-card-line");
+        const tl = gsap.timeline({
           scrollTrigger: { trigger: card, start: "top 88%" },
         });
-
-        const line = card.querySelector(".project-card-line");
-        gsap.fromTo(
-          line,
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: { trigger: card, start: "top 88%" },
-          }
-        );
+        tl.from(card, { y: 60, opacity: 0, duration: 0.9, ease: "power3.out" })
+          .fromTo(line, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out" }, 0);
       });
 
-      const isTouch = matchMedia("(hover: none)").matches;
-      if (!isTouch) {
-        const cursor = document.querySelector(".projects-cursor");
-        if (cursor) {
-          gsap.set(cursor, { xPercent: -50, yPercent: -50, opacity: 0, scale: 0.6 });
 
-          const quickX = gsap.quickTo(cursor, "x", { duration: 0.5, ease: "power3" });
-          const quickY = gsap.quickTo(cursor, "y", { duration: 0.5, ease: "power3" });
 
-          const moveHandler = (e) => {
-            quickX(e.clientX);
-            quickY(e.clientY);
-          };
-          window.addEventListener("mousemove", moveHandler);
-          removeProjectsCursorMove = () => window.removeEventListener("mousemove", moveHandler);
-
-          const bound = gsap.utils.toArray(".project-card").map((card) => {
-            const enter = () =>
-              gsap.to(cursor, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
-            const leave = () =>
-              gsap.to(cursor, { opacity: 0, scale: 0.6, duration: 0.3, ease: "power2.in" });
-            const move = (e) => {
-              const rect = card.getBoundingClientRect();
-              card.style.setProperty("--mx", `${((e.clientX - rect.left) / rect.width) * 100}%`);
-              card.style.setProperty("--my", `${((e.clientY - rect.top) / rect.height) * 100}%`);
-            };
-            card.addEventListener("mouseenter", enter);
-            card.addEventListener("mouseleave", leave);
-            card.addEventListener("mousemove", move);
-            return { card, enter, leave, move };
-          });
-          removeProjectsCardHandlers = () =>
-            bound.forEach(({ card, enter, leave, move }) => {
-              card.removeEventListener("mouseenter", enter);
-              card.removeEventListener("mouseleave", leave);
-              card.removeEventListener("mousemove", move);
-            });
-        }
-      }
+      // ── Smooth number counters for about stats ──
+      gsap.utils.toArray(".about-stat-value").forEach((el) => {
+        const text = el.textContent.trim();
+        const match = text.match(/^(\d+)(\+?)$/);
+        if (!match) return; // skip non-numeric like "INDIA", "B.TECH"
+        const target = parseInt(match[1], 10);
+        const suffix = match[2] || "";
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: target,
+          duration: 2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 90%",
+          },
+          onUpdate: () => {
+            el.textContent = Math.round(obj.val) + suffix;
+          },
+        });
+      });
 
       // ── whole-page dark → white world transition ──
       gsap.fromTo(
@@ -373,6 +351,7 @@ export default function Home() {
         contactLines.forEach((line, i) => line.removeEventListener("mouseenter", contactEnterHandlers[i]));
 
       // magnetic arrows on the email link and social links — desktop/mouse only
+      const isTouch = matchMedia("(hover: none)").matches;
       if (!isTouch) {
         const magneticEls = gsap.utils.toArray(".contact-email, .contact-social-link");
         const magneticCleanups = magneticEls.map((el) => {
@@ -389,7 +368,7 @@ export default function Home() {
             quickX(0);
             quickY(0);
           };
-          el.addEventListener("mousemove", move);
+          el.addEventListener("mousemove", move, { passive: true });
           el.addEventListener("mouseleave", leave);
           return () => {
             el.removeEventListener("mousemove", move);
@@ -406,7 +385,7 @@ export default function Home() {
       });
 
       gsap.from(".contact-line", {
-        y: 60, opacity: 0, filter: "blur(6px)",
+        y: 60, opacity: 0,
         duration: 1, stagger: 0.12, ease: "power3.out",
         scrollTrigger: { trigger: ".contact-headline", start: "top 82%" },
       });
@@ -445,8 +424,6 @@ export default function Home() {
     });
 
     return () => {
-      removeProjectsCursorMove();
-      removeProjectsCardHandlers();
       removeContactHoverListeners();
       removeContactMagnetic();
       smoother.kill();
@@ -462,7 +439,8 @@ export default function Home() {
   return (
     <>
       {!loaderDone && <Loader onFinish={handleLoaderFinish} />}
-      <div className="projects-cursor" aria-hidden="true">VIEW</div>
+      <CustomCursor />
+      <ScrollProgress />
 
       <div id="smooth-wrapper" ref={wrapperRef}>
         <div id="smooth-content" ref={contentRef}>

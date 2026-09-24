@@ -18,6 +18,9 @@
 .marquee-wrap {
   overflow: hidden;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   mask-image: linear-gradient(
     to right,
     transparent,
@@ -25,6 +28,7 @@
     black 90%,
     transparent
   );
+  will-change: transform;
 }
 
 .marquee-track {
@@ -32,6 +36,10 @@
   align-items: center;
   gap: 80px;
   width: max-content;
+}
+
+.marquee-track--reverse {
+  /* starts offset so the two rows look staggered */
 }
 
 .marquee-item {
@@ -47,4 +55,16 @@
 .marquee-item:hover {
   opacity: 1;
   color: var(--color-text);
+}
+
+/* second row is dimmer + smaller for depth */
+.marquee-item--dim {
+  font-size: clamp(14px, 1.6vw, 20px);
+  opacity: 0.25;
+  font-weight: 400;
+}
+
+.marquee-item--dim:hover {
+  opacity: 0.6;
+  color: var(--color-accent);
 }

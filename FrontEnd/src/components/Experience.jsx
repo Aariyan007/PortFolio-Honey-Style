@@ -254,7 +254,6 @@ export default function Experience() {
         },
         y: 40,
         opacity: 0,
-        filter: "blur(6px)",
       });
 
       // ─── Experience Cards animation ───
@@ -266,12 +265,12 @@ export default function Experience() {
           {
             x: isEven ? -60 : 60,
             opacity: 0,
-            filter: "blur(8px)",
+
           },
           {
             x: 0,
             opacity: 1,
-            filter: "blur(0px)",
+
             ease: "power3.out",
             scrollTrigger: {
               trigger: card,

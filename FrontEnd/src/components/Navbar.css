@@ -11,6 +11,15 @@
   font-size: 15px;
   letter-spacing: 0.04em;
   color: var(--color-text-dim);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 10, 10, 0.4);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.4s ease;
+}
+
+.navbar--hidden {
+  transform: translateY(-100%);
 }
 
 .navbar-logo {
@@ -72,13 +81,35 @@
 
 @media (max-width: 900px) {
   .navbar {
+    padding: 20px 24px;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
   }
   .navbar-links {
-    gap: 24px;
+    gap: 20px;
     order: 3;
     width: 100%;
+  }
+  .navbar-cta {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 500px) {
+  .navbar {
+    padding: 16px 16px;
+    gap: 8px;
+  }
+  .navbar-links {
+    gap: 14px;
+    font-size: 12px;
+  }
+  .navbar-logo {
+    font-size: 13px;
+  }
+  .navbar-link--stacked {
+    display: none;
   }
 }
 
