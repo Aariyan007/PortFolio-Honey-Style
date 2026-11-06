@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Briefcase, Calendar, MapPin, ExternalLink, Code2, Sparkles } from "lucide-react";
+import { Briefcase, Calendar, MapPin, Code2, Sparkles } from "lucide-react";
 import "./Experience.css";
 
 gsap.registerPlugin(ScrollTrigger);
