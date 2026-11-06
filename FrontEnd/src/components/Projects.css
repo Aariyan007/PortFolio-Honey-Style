@@ -585,3 +585,36 @@
 
 
 
+
+/* glass without backdrop-filter: blur over the animating canvas would re-render every frame */
+.project-card { background: rgba(16, 16, 20, 0.72); }
+
+@property --holo-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+
+.pcard-holo {
+  position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--holo-angle), transparent 0deg, var(--accent) 60deg, #ff8c42 120deg, transparent 180deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.project-card:hover .pcard-holo,
+.project-card:focus-visible .pcard-holo { opacity: 1; animation: holo-spin 3s linear infinite; }
+@keyframes holo-spin { to { --holo-angle: 360deg; } }
+
+.project-card-metrics { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+.project-card-metric,
+.project-modal-metrics li {
+  font-family: var(--font-hud); font-size: 10px; letter-spacing: 0.08em;
+  color: var(--accent, var(--color-accent));
+  border: 1px solid color-mix(in srgb, var(--accent, #f59e0b) 40%, transparent);
+  background: color-mix(in srgb, var(--accent, #f59e0b) 8%, transparent);
+  border-radius: 4px; padding: 4px 7px;
+}
+.project-modal-metrics { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 0; padding: 0; list-style: none; }
+.project-modal-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card:hover .pcard-holo { animation: none; }
+}
