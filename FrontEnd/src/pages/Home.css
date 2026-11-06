@@ -680,3 +680,16 @@
   margin-top: -2px;
   /* ensure no gap */
 }
+/* small text sits over the brightest part of the node cloud: a dark halo keeps it legible */
+.intro-text {
+  position: relative;
+  text-shadow: 0 0 2px rgba(10, 10, 10, 0.95), 0 0 10px rgba(10, 10, 10, 0.9), 0 0 24px rgba(10, 10, 10, 0.8);
+}
+.intro-text::before {
+  content: "";
+  position: absolute;
+  inset: -40px -90px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(10, 10, 10, 0.72), rgba(10, 10, 10, 0.35) 60%, transparent);
+}
