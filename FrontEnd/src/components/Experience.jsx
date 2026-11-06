@@ -34,11 +34,34 @@ const EXPERIENCES = [
     ],
   },
   {
+    id: "exp-ambassador",
+    role: "Campus Ambassador",
+    company: "Google Developer Groups On Campus - MITS",
+    location: "Kochi, Kerala, India",
+    period: "Oct 2026 — Present",
+    type: "Club",
+    description:
+      "Promoted from Lead Web Developer to represent Google Developer Groups On Campus at MITS, growing the student developer community and connecting it with Google developer programs, events, and resources.",
+    skills: [
+      "Community Building",
+      "Leadership",
+      "Public Speaking",
+      "Event Management",
+      "Developer Relations"
+    ],
+    highlights: [
+      "Represent GDG On Campus MITS as the chapter's campus ambassador",
+      "Drive student participation in developer events, workshops, and Google developer programs",
+      "Guide the core team in planning and running technical initiatives across the campus",
+      "Act as the link between students, the organizing team, and the wider GDG community"
+    ],
+  },
+  {
     id: "exp-2",
     role: "Lead Web Developer",
     company: "Google Developer Groups On Campus - MITS",
     location: "Kochi, Kerala, India",
-    period: "Oct 2025 — Present",
+    period: "Oct 2025 — Oct 2026",
     type: "Club",
     description:
       "Leading technical initiatives and coordinating developer-focused events at MITS, managing teams and ensuring smooth execution of technical activities across the campus.",
