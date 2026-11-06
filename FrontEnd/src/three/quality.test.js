@@ -37,3 +37,18 @@ describe("createQualityMonitor", () => {
     expect(m.tier).toBe("high");
   });
 });
+
+describe("createQualityMonitor warm-up", () => {
+  it("ignores slow boot frames until warmupMs of frame time has passed", () => {
+    const m = createQualityMonitor({ windowSize: 10, warmupMs: 1000 });
+    feed(m, 200, 5); // 1000 ms of janky boot frames, all inside warm-up
+    feed(m, 16, 10);
+    expect(m.tier).toBe("high");
+  });
+
+  it("still downgrades on sustained slowness after warm-up", () => {
+    const m = createQualityMonitor({ windowSize: 10, warmupMs: 100 });
+    feed(m, 30, 20);
+    expect(m.tier).toBe("low");
+  });
+});

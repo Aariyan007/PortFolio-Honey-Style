@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { X, ExternalLink } from "lucide-react";
 import DecodeText from "./DecodeText";
 import ProjectArchive from "./ProjectArchive";
@@ -156,9 +157,39 @@ export default function ProjectsSection() {
       { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "power3.out", delay: 0.1 }
     );
 
-    const handleKey = (e) => { if (e.key === "Escape") closeProject(); };
+    // dialog behaviour: focus inside, trap Tab, freeze the page behind, restore focus on close
+    const opener = document.activeElement;
+    const smoother = ScrollSmoother.get();
+    smoother?.paused(true);
+    card.querySelector(".project-modal-close")?.focus({ preventScroll: true });
+
+    const handleKey = (e) => {
+      if (e.key === "Escape") {
+        closeProject();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const focusables = card.querySelectorAll("button, a[href]");
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!card.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      smoother?.paused(false);
+      opener?.focus?.({ preventScroll: true });
+    };
   }, [selectedProject]);
 
   return (
@@ -304,7 +335,13 @@ export default function ProjectsSection() {
               if (e.target === modalOverlayRef.current) closeProject();
             }}
           >
-            <div className="project-modal" ref={modalCardRef}>
+            <div
+              className="project-modal"
+              ref={modalCardRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="project-modal-title"
+            >
               <button
                 type="button"
                 className="project-modal-close"
@@ -317,7 +354,7 @@ export default function ProjectsSection() {
               <div className="project-modal-accent" style={{ background: selectedProject.accent ?? "var(--color-accent)" }} />
 
               <span className="project-modal-index">{selectedProject.index ?? CATEGORY_LABEL[selectedProject.category]}</span>
-              <h2 className="project-modal-title">{selectedProject.title}</h2>
+              <h2 className="project-modal-title" id="project-modal-title">{selectedProject.title}</h2>
               {selectedProject.subtitle && <p className="project-modal-subtitle">{selectedProject.subtitle}</p>}
 
               <div className="project-modal-meta">

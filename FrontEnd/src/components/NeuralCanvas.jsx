@@ -5,6 +5,7 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { resolveFormation } from "../three/scrollMap.js";
 import { createQualityMonitor } from "../three/quality.js";
 import { HIGHLIGHT_EVENT } from "../three/events.js";
+import { canUseWebGL } from "../three/webgl.js";
 import { SECTION_IDS } from "../data/sections.js";
 import "./NeuralCanvas.css";
 
@@ -41,13 +42,21 @@ export default function NeuralCanvas({ onReady }) {
       onReadyRef.current?.();
     };
 
+    // ?nowebgl forces the same probe failure a real unsupported device hits
+    const forceFail = new URLSearchParams(window.location.search).has("nowebgl");
+    if (!canUseWebGL(document, { forceFail })) {
+      // microtask: a StrictMode remount cancels the first run, so only one warning is logged
+      const err = new Error(forceFail ? "disabled by ?nowebgl" : "WebGL2 unavailable");
+      Promise.resolve().then(() => fail(err));
+      return () => {
+        cancelled = true;
+      };
+    }
+
     import("../three/NeuralScene.js")
       .then(({ default: NeuralScene }) => {
         if (cancelled) return;
         try {
-          if (new URLSearchParams(window.location.search).has("nowebgl")) {
-            throw new Error("disabled by ?nowebgl");
-          }
           scene = new NeuralScene(canvas, {
             nodeCount: mobile ? 500 : 1400,
             dpr: mobile ? 1 : Math.min(window.devicePixelRatio || 1, 1.5),
@@ -58,7 +67,8 @@ export default function NeuralCanvas({ onReady }) {
           return;
         }
 
-        const monitor = createQualityMonitor();
+        // ignore ~6 s of boot frames: the loader reel, ScrollSmoother and SplitText setup are not steady-state cost
+        const monitor = createQualityMonitor({ warmupMs: 6000 });
         scene.onFrame = (dt) => {
           if (monitor.tier === "high" && monitor.sample(dt) === "low") scene.setQuality("low");
         };
