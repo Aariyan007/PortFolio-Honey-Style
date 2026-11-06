@@ -58,7 +58,8 @@ describe("projects data", () => {
     }
   });
 
-  it("exposes 4 stats", () => {
-    expect(STATS).toHaveLength(4);
+  it("exposes the resume stats", () => {
+    expect(STATS).toHaveLength(5);
+    expect(STATS.map((s) => s.value)).toEqual(expect.arrayContaining(["75+", "600+"]));
   });
 });

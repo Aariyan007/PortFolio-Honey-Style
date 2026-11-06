@@ -18,11 +18,12 @@ const EXPERIENCE = 2;
 const FORMATIONS = 5;
 
 // per formation (hero, about, experience, projects, contact)
-const SPIN = [0.06, 0.12, 0.3, 0.05, 0.15]; // rad/s about the shape's own vertical axis
+const SPIN = [0.035, 0.07, 0.18, 0.03, 0.09]; // rad/s about the shape's own vertical axis
 const TILT = [1.12, 0.25, 0, 0.5, 0]; // rad about x
 const DIM = [1, 0.85, 0.8, 0.75, 0.9]; // overall brightness
+const DIM_PORTRAIT = [1.8, 1.1, 0.7, 0.35, 1.3]; // phones: sparse nodes need a lift, but not behind dense text
 const CLEAR = [0.5, 0.7, 0.85, 0.8, 0.65]; // how much the centre content column is faded
-const MORPH_RATE = 1.1; // 1/s: a section change takes ~2.5 s to settle
+const MORPH_RATE = 0.6; // 1/s: a section change takes ~5 s to settle
 const CONTENT_HALF_PX = 560; // half of the 1100px content column, plus a margin
 const FOV_TAN = Math.tan((50 / 2) * (Math.PI / 180));
 export default class NeuralScene {
@@ -43,6 +44,9 @@ export default class NeuralScene {
     this.formation = { from: 0, to: 1, mix: 0 };
     this.progress = 0;
     this.target = 0;
+    this.cameraBase = 8;
+    this.clearScale = 1;
+    this.dimTable = DIM;
     this.highlight = { cluster: -1, amount: 0, target: 0 };
     this.pointerTarget = { x: 0, y: 0 };
     this.px = 0;
@@ -70,6 +74,7 @@ export default class NeuralScene {
       uPixelRatio: { value: dpr },
       uHighlight: { value: -1 },
       uHighlightAmount: { value: 0 },
+      uSizeScale: { value: 1 },
     };
 
     const { positions, clusters, seeds } = buildFormations(nodeCount, seed);
@@ -176,9 +181,9 @@ export default class NeuralScene {
     this.uniforms.uFrom.value = f.from;
     this.uniforms.uTo.value = f.to;
     this.uniforms.uMix.value = f.mix;
-    this.uniforms.uDim.value = lerpTable(DIM, p);
-    this.uniforms.uClear.value = lerpTable(CLEAR, p);
-    this.camera.position.z = 8 - p * 0.25;
+    this.uniforms.uDim.value = lerpTable(this.dimTable, p);
+    this.uniforms.uClear.value = lerpTable(CLEAR, p) * this.clearScale;
+    this.camera.position.z = this.cameraBase - p * 0.25;
   }
 
   setPointer(ndcX, ndcY) {
@@ -221,8 +226,15 @@ export default class NeuralScene {
     this.renderer.getDrawingBufferSize(this.uniforms.uViewport.value);
     const clearHalf = Math.min(0.5, CONTENT_HALF_PX / w);
     this.uniforms.uClearHalf.value = clearHalf;
+    // portrait phones: pull the camera back so whole shapes fit, and fade less since text spans the full width
+    const aspect = this.camera.aspect;
+    this.cameraBase = aspect < 1 ? 8 + (1 - aspect) * 6 : 8;
+    this.clearScale = clearHalf >= 0.5 ? 0.45 : 1;
+    this.dimTable = aspect < 1 ? DIM_PORTRAIT : DIM;
+    this.nodeUniforms.uSizeScale.value = aspect < 1 ? 1.9 : 1; // fewer, more distant nodes need bigger dots
+    this.camera.position.z = this.cameraBase - this.progress * 0.25;
     // park the helices in the middle of the free margin beside the content column
-    const halfW = (8 - EXPERIENCE * 0.25) * FOV_TAN * this.camera.aspect;
+    const halfW = (this.cameraBase - EXPERIENCE * 0.25) * FOV_TAN * aspect;
     const marginX = ((clearHalf * 2 + 1) / 2) * halfW;
     this.uniforms.uLayout.value[EXPERIENCE].w = Math.max(0, marginX - HELIX_SPLIT);
     this.#renderIfStatic();

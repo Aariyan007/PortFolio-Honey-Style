@@ -403,7 +403,7 @@ export default function Home() {
                     ["to", false],
                     ["Python,", true], ["FastAPI,", true], ["TensorFlow,", true], ["and", true], ["machine", true], ["learning.", true],
                     ["I", false], ["also", false], ["like", false], ["breaking", false], ["down", false], ["hard", false], ["problems.", false],
-                    ["A lot of", true], ["LeetCode", true], ["problems", true],
+                    ["600+", true], ["LeetCode", true], ["problems", true],
                     ["solved.", false], ["Always", false], ["curious", false], ["about", false], ["what", false], ["happens", false], ["under", false], ["the", false], ["hood.", false],
                   ].map(([word, accent], i) => (
                     <span
@@ -430,8 +430,8 @@ export default function Home() {
                   <span className="about-stat-label">DEGREE</span>
                 </div>
                 <div className="about-stat">
-                  <span className="about-stat-value">3+</span>
-                  <span className="about-stat-label">YEARS CODING</span>
+                  <span className="about-stat-value">75+</span>
+                  <span className="about-stat-label">PROJECTS</span>
                 </div>
               </aside>
             </div>

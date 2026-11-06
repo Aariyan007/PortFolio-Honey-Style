@@ -54,9 +54,9 @@ vec3 placed(vec3 p, float i) {
 vec3 nodeWorld(float seed) {
   vec3 p = mix(placed(formation(uFrom), uFrom), placed(formation(uTo), uTo), stagger(uMix, seed));
   p += 0.06 * vec3(
-    sin(uTime * 0.6 + seed * 40.0),
-    cos(uTime * 0.5 + seed * 31.0),
-    sin(uTime * 0.4 + seed * 17.0));
+    sin(uTime * 0.35 + seed * 40.0),
+    cos(uTime * 0.3 + seed * 31.0),
+    sin(uTime * 0.25 + seed * 17.0));
   vec4 world = modelMatrix * vec4(p, 1.0);
   vec2 d = world.xy - uPointer.xy;
   float push = 1.0 - smoothstep(0.0, 1.2, length(d));

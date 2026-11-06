@@ -117,9 +117,9 @@ export const FEATURED = [
     description:
       "Found where Kling AI hides its China GB 45438-2025 'AI-generated' label in images and videos, and shipped kling-label, a dependency-free detection tool.",
     longDescription:
-      "The label lives in a PNG tEXt chunk or MP4 metadata key named AIGC holding the GB 45438-2025 fields as JSON; kling-label read it in 36 of 36 Kling PNGs. The request ID dates a file to about one second, and an H.264 'kling-ai' marker sits inside newer video streams. Pixel-watermark tests with planted positive controls found no shared invisible pattern. Detection only, for research and education.",
+      "The label lives in a PNG tEXt chunk or MP4 metadata key named AIGC holding the GB 45438-2025 fields as JSON; kling-label, built on the Python standard library alone with 75 unit tests, detected 37 of 37 real Kling files with 0 false positives across 49 non-Kling files. It also exposed a gap in Kling's own checker, which misreads its newest model's metadata; the finding was disclosed responsibly. The request ID dates a file to about one second, and an H.264 'kling-ai' marker sits inside newer video streams. Pixel-watermark tests with planted positive controls found no shared invisible pattern. Detection only, for research and education.",
     tags: ["Python", "Reverse engineering", "PNG / MP4 metadata", "Forensics"],
-    metrics: ["36/36 PNGs detected", "Zero dependencies"],
+    metrics: ["37/37 detected", "0/49 false positives", "Zero dependencies"],
     href: `${GH}/kling-label-detector`,
     accent: "#facc15",
   },
@@ -146,7 +146,7 @@ export const ARCHIVE = [
   { id: "nyaya-ai", title: "NyayaAI", category: "ai", year: "2025", lang: "Python", stars: 0, href: `${GH}/Gen-Ai-Nyaya-Ai`,
     description: "Legal PDF assistant: plain-English explanations and risk flags grounded in Indian legal acts (RAG + Gemini)." },
   { id: "greencorridor", title: "GreenCorridor", category: "ai", year: "2025", lang: "JavaScript", stars: 1, href: `${GH}/Mini_Project-`,
-    description: "Federated learning from scratch to clear ambulance routes; SGD in pure JS, raw GPS never leaves the edge." },
+    description: "Best Innovative Project, Nirman Hackathon. Federated learning from scratch to clear ambulance routes; SGD in pure JS, raw GPS never leaves the edge." },
   { id: "object-detection", title: "Waste Object Detection", category: "ai", year: "2024", lang: "Python", stars: 0, href: `${GH}/Object-detection`,
     description: "Real-time plastic and waste detection with OpenCV and MobileNet SSD." },
   { id: "network-anomaly", title: "Network Anomaly Detection", category: "ai", year: "2024", lang: "Jupyter", stars: 2, href: `${GH}/NetworkTrafficAnomalyDetection`,
@@ -199,8 +199,9 @@ export const ARCHIVE = [
 ];
 
 export const STATS = [
-  { value: "50+", label: "Public repos on GitHub", tag: null },
-  { value: "12+", label: "Open Source PRs", tag: null },
-  { value: "✓", label: "Hacktoberfest 2025", tag: "COMPLETED" },
-  { value: "3+", label: "Years Coding", tag: null },
+  { value: "75+", label: "Projects built", tag: null },
+  { value: "600+", label: "LeetCode problems solved", tag: "TOP 0.75%" },
+  { value: "1,798", label: "LeetCode contest rating", tag: "TOP 8%" },
+  { value: "2,153", label: "ICPC 2025 team rank of 80,000", tag: null },
+  { value: "6", label: "Merged PRs, Hacktoberfest 2025", tag: "COMPLETED" },
 ];
