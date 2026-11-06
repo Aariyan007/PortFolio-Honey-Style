@@ -12,6 +12,7 @@ import Contact from "../components/Contact";
 import Loader from "../components/Loader";
 import CustomCursor from "../components/CustomCursor";
 import ScrollProgress from "../components/ScrollProgress";
+import NeuralCanvas from "../components/NeuralCanvas";
 
 gsap.registerPlugin(SplitText, ScrollTrigger, ScrollSmoother);
 
@@ -22,8 +23,6 @@ const MARQUEE_ITEMS = [
 ];
 
 export default function Home() {
-  const videoRef = useRef(null);
-  const videoWrapRef = useRef(null);
   const wrapperRef = useRef(null);
   const contentRef = useRef(null);
   const heroTlRef = useRef(null);
@@ -31,12 +30,11 @@ export default function Home() {
 
   useEffect(() => {
     let removeListeners = () => { };
-    let removeMouseMove = () => { };
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ paused: true, defaults: { ease: "power4.out" } });
 
-      tl.from(videoRef.current, { opacity: 0, duration: 1.6 })
+      tl.from(".neural-canvas, .neural-fallback", { opacity: 0, duration: 1.6 })
         .from(".intro-text", { opacity: 0, y: -15, duration: 0.8 }, "-=1")
         .from(".headline-line", { y: 80, opacity: 0, duration: 1, stagger: 0.15 }, "-=0.6")
         .from(".frame-corners .corner", { opacity: 0, scale: 0.5, duration: 0.6, stagger: 0.05 }, "-=0.4")
@@ -59,31 +57,10 @@ export default function Home() {
       lines.forEach((line, i) => line.addEventListener("mouseenter", enterHandlers[i]));
       removeListeners = () =>
         lines.forEach((line, i) => line.removeEventListener("mouseenter", enterHandlers[i]));
-
-      const quickX = gsap.quickTo(videoWrapRef.current, "x", { duration: 1.2, ease: "power3.out" });
-      const quickY = gsap.quickTo(videoWrapRef.current, "y", { duration: 1.2, ease: "power3.out" });
-      // RAF-throttled hero parallax
-      let heroRafId = 0;
-      const handleMouseMove = (e) => {
-        if (heroRafId) return;
-        heroRafId = requestAnimationFrame(() => {
-          const x = (e.clientX / window.innerWidth - 0.5) * 2;
-          const y = (e.clientY / window.innerHeight - 0.5) * 2;
-          quickX(x * 20);
-          quickY(y * 12);
-          heroRafId = 0;
-        });
-      };
-      window.addEventListener("mousemove", handleMouseMove, { passive: true });
-      removeMouseMove = () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        cancelAnimationFrame(heroRafId);
-      };
     });
 
     return () => {
       removeListeners();
-      removeMouseMove();
       ctx.revert();
     };
   }, []);
@@ -107,12 +84,6 @@ export default function Home() {
         scrollTrigger: { trigger: ".home-bottom-marquee", start: "top 95%", end: "top 60%", scrub: 1 },
         y: 60,
         opacity: 0,
-      });
-
-      gsap.to(".about-section", {
-        scrollTrigger: { trigger: ".about-section", start: "top 85%", end: "top 25%", scrub: true },
-        backgroundColor: "#141418",
-        ease: "none",
       });
 
       const aboutWords = gsap.utils.toArray(".about-reveal-word");
@@ -270,37 +241,6 @@ export default function Home() {
         });
       });
 
-      // ── whole-page dark → white world transition ──
-      gsap.fromTo(
-        document.body,
-        { backgroundColor: "#141418" },
-        {
-          backgroundColor: "#f0ede8",
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".contact-section",
-            start: "top 80%",
-            end: "top -10%",
-            scrub: 0.8,
-          },
-        }
-      );
-
-      gsap.fromTo(
-        "#smooth-wrapper",
-        { backgroundColor: "#141418" },
-        {
-          backgroundColor: "#f0ede8",
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".contact-section",
-            start: "top 80%",
-            end: "top -10%",
-            scrub: 0.8,
-          },
-        }
-      );
-
       // ── contact section extras: watermark, glow, rule draw-in ──
       gsap.to([".contact-rule--top", ".contact-rule--mid"], {
         scaleX: 1,
@@ -439,19 +379,13 @@ export default function Home() {
   return (
     <>
       {!loaderDone && <Loader onFinish={handleLoaderFinish} />}
+      <NeuralCanvas />
       <CustomCursor />
       <ScrollProgress />
 
       <div id="smooth-wrapper" ref={wrapperRef}>
         <div id="smooth-content" ref={contentRef}>
-          <div className="home">
-            <div className="hero-video-wrap" ref={videoWrapRef}>
-              <video ref={videoRef} className="hero-video" autoPlay muted loop playsInline>
-                <source src="/hero.webm" type="video/webm" />
-                <source src="/hero.mp4" type="video/mp4" />
-              </video>
-            </div>
-
+          <div className="home" id="hero">
             <div className="hero-overlay" />
             <div className="hero-vignette" />
             <div className="grain-overlay" />
@@ -487,7 +421,7 @@ export default function Home() {
             </div>
           </div>
 
-          <section className="about-section">
+          <section className="about-section" id="about">
             <div className="about-progress" aria-hidden="true">
               <div className="about-progress-fill" />
             </div>

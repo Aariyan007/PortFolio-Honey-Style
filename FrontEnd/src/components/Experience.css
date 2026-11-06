@@ -2,7 +2,7 @@
 .experience-section {
   position: relative;
   min-height: 100vh;
-  background: #0d0d11;
+  background: transparent;
   padding: 140px 40px 160px;
   overflow: hidden;
   color: var(--color-text);
