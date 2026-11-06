@@ -1,5 +1,13 @@
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { TextPlugin } from "gsap/TextPlugin";
 import DecodeText from "./DecodeText";
 import "./Contact.css";
+
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+const COMMAND = "send_message --to aariyan --priority high";
 
 const SOCIALS = [
   { label: "GitHub",   href: "https://github.com/Aariyan007",          mono: "GH" },
@@ -8,6 +16,27 @@ const SOCIALS = [
 ];
 
 export default function Contact() {
+  const termRef = useRef(null);
+
+  useEffect(() => {
+    const el = termRef.current;
+    if (!el) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.textContent = COMMAND;
+      return;
+    }
+    const tween = gsap.to(el, {
+      text: { value: COMMAND },
+      duration: 1.8,
+      ease: "none",
+      scrollTrigger: { trigger: el, start: "top 85%" },
+    });
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
+  }, []);
+
   return (
     <section id="contact-section" className="contact-section">
       <div className="contact-grain" aria-hidden="true" />
@@ -31,6 +60,12 @@ export default function Contact() {
           Hardware, AI, full-stack — if it's hard and interesting, I'm in.
           <br />
           Drop me a line and we'll figure the rest out.
+        </p>
+
+        <p className="contact-terminal" aria-label={COMMAND}>
+          <span className="contact-terminal-prompt" aria-hidden="true">&gt;</span>
+          <span ref={termRef} aria-hidden="true" />
+          <span className="contact-terminal-caret" aria-hidden="true" />
         </p>
 
         <a

@@ -301,6 +301,10 @@ export default function Experience() {
         );
       });
 
+      gsap.utils.toArray(".exp-node").forEach((node) => {
+        ScrollTrigger.create({ trigger: node, start: "top 55%", toggleClass: { targets: node, className: "is-lit" } });
+      });
+
       // ─── Background Watermark Parallax ───
       gsap.fromTo(
         ".exp-watermark",
