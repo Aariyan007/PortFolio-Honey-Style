@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildFormations, FORMATION_NAMES, PROJECT_CLUSTERS } from "./formations.js";
+import { buildFormations, FORMATION_NAMES, PROJECT_CLUSTERS, HELIX_SPLIT } from "./formations.js";
 import { mulberry32 } from "./prng.js";
 
 describe("mulberry32", () => {
@@ -52,6 +52,28 @@ describe("buildFormations", () => {
   it("handles a single node", () => {
     const { positions } = buildFormations(1, 7);
     for (const p of positions) expect(p.every(Number.isFinite)).toBe(true);
+  });
+
+  it("hero is a thin disc in the xz plane (tilted later in the shader)", () => {
+    const p = buildFormations(1400, 7).positions[0];
+    let maxY = 0, maxR = 0;
+    for (let i = 0; i < 1400; i++) {
+      maxY = Math.max(maxY, Math.abs(p[i * 3 + 1]));
+      maxR = Math.max(maxR, Math.hypot(p[i * 3], p[i * 3 + 2]));
+    }
+    expect(maxR).toBeGreaterThan(3);
+    expect(maxY).toBeLessThan(maxR * 0.25);
+  });
+
+  it("experience is two helices, one each side of x = 0, clear of the centre", () => {
+    const p = buildFormations(1400, 7).positions[2];
+    let left = 0, right = 0;
+    for (let i = 0; i < 1400; i++) {
+      const x = p[i * 3];
+      expect(Math.abs(x)).toBeGreaterThan(HELIX_SPLIT - 1);
+      if (x < 0) left++; else right++;
+    }
+    expect(Math.min(left, right)).toBeGreaterThan(600);
   });
 
   it("rejects bad counts", () => {

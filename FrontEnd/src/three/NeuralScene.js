@@ -1,8 +1,9 @@
 import {
   AdditiveBlending, BufferAttribute, BufferGeometry, Color, Group, LineSegments,
-  PerspectiveCamera, Points, Scene, ShaderMaterial, Vector3, WebGLRenderer,
+  PerspectiveCamera, Points, Scene, ShaderMaterial, Vector2, Vector3, Vector4, WebGLRenderer,
 } from "three";
-import { buildFormations } from "./formations.js";
+import { buildFormations, HELIX_SPLIT } from "./formations.js";
+import { damp, splitProgress, lerpTable } from "./motion.js";
 import { buildEdges, edgeLengths } from "./graph.js";
 import common from "./shaders/common.glsl?raw";
 import nodeVert from "./shaders/node.vert.glsl?raw";
@@ -13,7 +14,17 @@ import edgeFrag from "./shaders/edge.frag.glsl?raw";
 const AMBER = new Color("#f59e0b");
 const HOT = new Color("#ff3b30");
 const PROJECTS = 3;
+const EXPERIENCE = 2;
+const FORMATIONS = 5;
 
+// per formation (hero, about, experience, projects, contact)
+const SPIN = [0.06, 0.12, 0.3, 0.05, 0.15]; // rad/s about the shape's own vertical axis
+const TILT = [1.12, 0.25, 0, 0.5, 0]; // rad about x
+const DIM = [1, 0.85, 0.8, 0.75, 0.9]; // overall brightness
+const CLEAR = [0.5, 0.7, 0.85, 0.8, 0.65]; // how much the centre content column is faded
+const MORPH_RATE = 1.1; // 1/s: a section change takes ~2.5 s to settle
+const CONTENT_HALF_PX = 560; // half of the 1100px content column, plus a margin
+const FOV_TAN = Math.tan((50 / 2) * (Math.PI / 180));
 export default class NeuralScene {
   constructor(canvas, { nodeCount = 1400, dpr = 1, animate = true, seed = 7 } = {}) {
     // throws if WebGL is unavailable — NeuralCanvas catches and shows the fallback
@@ -30,11 +41,12 @@ export default class NeuralScene {
     this.scene.add(this.group);
 
     this.formation = { from: 0, to: 1, mix: 0 };
+    this.progress = 0;
+    this.target = 0;
     this.highlight = { cluster: -1, amount: 0, target: 0 };
     this.pointerTarget = { x: 0, y: 0 };
     this.px = 0;
     this.py = 0;
-    this.spin = 0;
     this.running = false;
     this.rafId = 0;
     this.lastTime = 0;
@@ -48,6 +60,11 @@ export default class NeuralScene {
       uTo: { value: 1 },
       uPointer: { value: new Vector3(99, 99, 0) },
       uPointerStrength: { value: animate ? 1 : 0 },
+      uLayout: { value: SPIN.map((spin, i) => new Vector4(i === EXPERIENCE ? HELIX_SPLIT : 0, animate ? spin : 0, TILT[i], 0)) },
+      uViewport: { value: new Vector2(1, 1) },
+      uClear: { value: CLEAR[0] },
+      uClearHalf: { value: 0.5 },
+      uDim: { value: DIM[0] },
     };
     this.nodeUniforms = {
       uPixelRatio: { value: dpr },
@@ -142,13 +159,26 @@ export default class NeuralScene {
     this.edgeVertexCount = vCount;
   }
 
-  setFormation(from, to, mix) {
-    this.formation = { from, to, mix };
-    this.uniforms.uFrom.value = from;
-    this.uniforms.uTo.value = to;
-    this.uniforms.uMix.value = mix;
-    this.camera.position.z = 8 - (from + mix) * 0.25;
-    this.#renderIfStatic();
+  // p: 0 = hero … 4 = contact, fractional mid-transition. The scene eases toward it.
+  setProgress(p) {
+    this.target = p;
+    if (!this.animate) {
+      this.progress = p;
+      this.#applyProgress();
+      this.render(0);
+    }
+  }
+
+  #applyProgress() {
+    const p = this.progress;
+    const f = splitProgress(p, FORMATIONS);
+    this.formation = f;
+    this.uniforms.uFrom.value = f.from;
+    this.uniforms.uTo.value = f.to;
+    this.uniforms.uMix.value = f.mix;
+    this.uniforms.uDim.value = lerpTable(DIM, p);
+    this.uniforms.uClear.value = lerpTable(CLEAR, p);
+    this.camera.position.z = 8 - p * 0.25;
   }
 
   setPointer(ndcX, ndcY) {
@@ -188,6 +218,13 @@ export default class NeuralScene {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    this.renderer.getDrawingBufferSize(this.uniforms.uViewport.value);
+    const clearHalf = Math.min(0.5, CONTENT_HALF_PX / w);
+    this.uniforms.uClearHalf.value = clearHalf;
+    // park the helices in the middle of the free margin beside the content column
+    const halfW = (8 - EXPERIENCE * 0.25) * FOV_TAN * this.camera.aspect;
+    const marginX = ((clearHalf * 2 + 1) / 2) * halfW;
+    this.uniforms.uLayout.value[EXPERIENCE].w = Math.max(0, marginX - HELIX_SPLIT);
     this.#renderIfStatic();
   }
 
@@ -217,15 +254,16 @@ export default class NeuralScene {
 
   render(dtMs = 0) {
     const dt = dtMs / 1000;
-    const { from, to, mix } = this.formation;
     if (this.animate) {
       this.uniforms.uTime.value += dt;
-      this.spin += dt * 0.05 * (from === 0 ? 1 - mix : 0);
+      this.progress = damp(this.progress, this.target, MORPH_RATE, dt);
     }
+    this.#applyProgress();
+    const { from, to, mix } = this.formation;
     const k = this.animate ? Math.min(1, dt * 3) : 1;
     this.px += (this.pointerTarget.x * 0.15 - this.px) * k;
     this.py += (this.pointerTarget.y * 0.15 - this.py) * k;
-    this.group.rotation.set(-this.py, this.spin + this.px, 0);
+    this.group.rotation.set(-this.py, this.px, 0);
 
     const h = this.highlight;
     h.amount += (h.target - h.amount) * (this.animate ? Math.min(1, dt * 6) : 1);

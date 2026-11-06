@@ -84,16 +84,16 @@ export default function NeuralCanvas({ onReady }) {
         ScrollTrigger.addEventListener("refresh", measure);
         cleanups.push(() => ScrollTrigger.removeEventListener("refresh", measure));
 
-        let lastKey = "";
+        let last = -1;
         const sync = () => {
           const smoother = ScrollSmoother.get();
           const y = smoother ? smoother.scrollTop() : window.scrollY;
           const f = resolveFormation(y, window.innerHeight, tops);
           const mix = reduced ? (f.mix >= 0.5 ? 1 : 0) : f.mix;
-          const key = `${f.from}:${f.to}:${mix.toFixed(4)}`;
-          if (key === lastKey) return;
-          lastKey = key;
-          scene.setFormation(f.from, f.to, mix);
+          const p = f.from + mix;
+          if (Math.abs(p - last) < 1e-4) return;
+          last = p;
+          scene.setProgress(p); // the scene eases toward p, so fast scrolls still morph slowly
         };
         gsap.ticker.add(sync);
         cleanups.push(() => gsap.ticker.remove(sync));
