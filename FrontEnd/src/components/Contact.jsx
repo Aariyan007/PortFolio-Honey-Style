@@ -35,6 +35,7 @@ export default function Contact() {
 
         <a
           className="contact-email"
+          data-magnetic
           href="mailto:aariyansunu28@gmail.com"
           aria-label="Send Aariyan an email"
         >

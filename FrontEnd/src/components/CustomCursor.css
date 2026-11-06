@@ -69,11 +69,37 @@
 
 /* ── hide on touch / small screens ── */
 @media (hover: none), (max-width: 700px) {
-  .custom-cursor {
+  .custom-cursor,
+  .custom-cursor-dot {
     display: none !important;
   }
   .has-custom-cursor,
   .has-custom-cursor * {
     cursor: auto !important;
   }
+}
+
+.custom-cursor { border-color: rgba(var(--color-accent-rgb), 0.55); mix-blend-mode: normal; }
+
+.custom-cursor.cursor--snap {
+  width: var(--snap-w);
+  height: var(--snap-h);
+  border-radius: 10px;
+  opacity: 1;
+  border-color: rgba(var(--color-accent-rgb), 0.9);
+  box-shadow: 0 0 18px rgba(var(--color-accent-rgb), 0.35);
+}
+
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background:
+    linear-gradient(var(--color-accent), var(--color-accent)) center / 1px 100% no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) center / 100% 1px no-repeat;
 }

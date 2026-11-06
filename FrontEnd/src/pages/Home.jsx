@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -29,6 +29,8 @@ export default function Home() {
   const contentRef = useRef(null);
   const heroTlRef = useRef(null);
   const [loaderDone, setLoaderDone] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
+  const handleSceneReady = useCallback(() => setSceneReady(true), []);
 
   useEffect(() => {
     let removeListeners = () => { };
@@ -323,9 +325,10 @@ export default function Home() {
 
   return (
     <>
-      {!loaderDone && <Loader onFinish={handleLoaderFinish} />}
-      <NeuralCanvas />
+      {!loaderDone && <Loader onFinish={handleLoaderFinish} ready={sceneReady} />}
+      <NeuralCanvas onReady={handleSceneReady} />
       <Hud />
+      <Navbar />
       <CustomCursor />
       <ScrollProgress />
 
@@ -341,8 +344,6 @@ export default function Home() {
               <span className="hero-meta-item"><span className="status-dot" /> AVAILABLE FOR WORK</span>
               <span className="hero-meta-item hero-meta-scroll">SCROLL ↓</span>
             </div>
-
-            <Navbar />
 
             <main className="hero">
               <p className="intro-text">

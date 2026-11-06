@@ -2,66 +2,81 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import "./CustomCursor.css";
 
-/**
- * Lightweight custom cursor — single ring, no MutationObserver.
- * Morphs on hover using CSS classes + event delegation.
- */
+const INTERACTIVE = "a, button, .navbar-link, .navbar-cta, .contact-social-link";
+
 export default function CustomCursor() {
-  const cursorRef = useRef(null);
+  const ringRef = useRef(null);
+  const dotRef = useRef(null);
   const labelRef = useRef(null);
 
   useEffect(() => {
-    const cursor = cursorRef.current;
-    const label = labelRef.current;
-    if (!cursor) return;
+    const ring = ringRef.current;
+    const dot = dotRef.current;
+    if (!ring || !dot) return;
 
-    // hide on touch devices
-    if (matchMedia("(hover: none)").matches) {
-      cursor.style.display = "none";
+    const touch = matchMedia("(hover: none)").matches;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (touch || reduced) {
+      ring.style.display = "none";
+      dot.style.display = "none";
       return;
     }
 
     document.documentElement.classList.add("has-custom-cursor");
-
-    // single quickTo for smooth follow
-    const qx = gsap.quickTo(cursor, "x", { duration: 0.45, ease: "power3" });
-    const qy = gsap.quickTo(cursor, "y", { duration: 0.45, ease: "power3" });
+    const rx = gsap.quickTo(ring, "x", { duration: 0.45, ease: "power3" });
+    const ry = gsap.quickTo(ring, "y", { duration: 0.45, ease: "power3" });
+    const dx = gsap.quickTo(dot, "x", { duration: 0.08, ease: "power3" });
+    const dy = gsap.quickTo(dot, "y", { duration: 0.08, ease: "power3" });
+    let snapEl = null;
 
     const move = (e) => {
-      qx(e.clientX);
-      qy(e.clientY);
+      dx(e.clientX);
+      dy(e.clientY);
+      if (snapEl) {
+        const r = snapEl.getBoundingClientRect();
+        rx(r.left + r.width / 2);
+        ry(r.top + r.height / 2);
+      } else {
+        rx(e.clientX);
+        ry(e.clientY);
+      }
     };
 
-    // Use event delegation on document — no per-element listeners needed
     const over = (e) => {
-      // project cards get special "VIEW" label (check first since they're not <a>/<button>)
-      const projectCard = e.target.closest(".project-card");
-      if (projectCard) {
-        cursor.classList.add("cursor--view");
-        if (label) label.textContent = "VIEW";
+      const mag = e.target.closest("[data-magnetic]");
+      if (mag) {
+        snapEl = mag;
+        const r = mag.getBoundingClientRect();
+        ring.style.setProperty("--snap-w", `${r.width + 18}px`);
+        ring.style.setProperty("--snap-h", `${r.height + 14}px`);
+        ring.classList.add("cursor--snap");
         return;
       }
-
-      const el = e.target.closest("a, button, .navbar-link, .navbar-cta, .contact-social-link");
-      if (!el) return;
-      cursor.classList.add("cursor--hover");
+      if (e.target.closest(".project-card")) {
+        ring.classList.add("cursor--view");
+        if (labelRef.current) labelRef.current.textContent = "VIEW";
+        return;
+      }
+      if (e.target.closest(INTERACTIVE)) ring.classList.add("cursor--hover");
     };
 
     const out = (e) => {
-      const projectCard = e.target.closest(".project-card");
-      if (projectCard) {
-        cursor.classList.remove("cursor--view");
-        return;
+      const to = e.relatedTarget;
+      if (snapEl && (!to || !snapEl.contains(to))) {
+        snapEl = null;
+        ring.classList.remove("cursor--snap");
       }
-      const el = e.target.closest("a, button, .navbar-link, .navbar-cta, .contact-social-link");
-      if (!el) return;
-      cursor.classList.remove("cursor--hover", "cursor--view");
+      if (e.target.closest(".project-card") && !(to && to.closest?.(".project-card"))) {
+        ring.classList.remove("cursor--view");
+      }
+      if (e.target.closest(INTERACTIVE) && !(to && to.closest?.(INTERACTIVE))) {
+        ring.classList.remove("cursor--hover");
+      }
     };
 
     window.addEventListener("mousemove", move, { passive: true });
     document.addEventListener("mouseover", over, { passive: true });
     document.addEventListener("mouseout", out, { passive: true });
-
     return () => {
       window.removeEventListener("mousemove", move);
       document.removeEventListener("mouseover", over);
@@ -71,8 +86,11 @@ export default function CustomCursor() {
   }, []);
 
   return (
-    <div className="custom-cursor" ref={cursorRef}>
-      <span className="custom-cursor-label" ref={labelRef} />
-    </div>
+    <>
+      <div className="custom-cursor" ref={ringRef}>
+        <span className="custom-cursor-label" ref={labelRef} />
+      </div>
+      <div className="custom-cursor-dot" ref={dotRef} />
+    </>
   );
 }

@@ -373,6 +373,7 @@ export default function ProjectsSection() {
               </p>
               <a
                 className="pside-github"
+                data-magnetic
                 href="https://github.com/Aariyan007"
                 target="_blank"
                 rel="noreferrer"
