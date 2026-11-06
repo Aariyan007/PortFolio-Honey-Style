@@ -1,3 +1,4 @@
+import DecodeText from "./DecodeText";
 import "./Contact.css";
 
 const SOCIALS = [
@@ -17,7 +18,7 @@ export default function Contact() {
       <div className="contact-inner">
         <p className="contact-eyebrow">
           <span className="contact-eyebrow-dot" />
-          OPEN FOR WORK — 2026
+          <DecodeText text="OPEN FOR WORK — 2026" />
         </p>
 
         <h2 className="contact-headline">

@@ -13,6 +13,8 @@ import Loader from "../components/Loader";
 import CustomCursor from "../components/CustomCursor";
 import ScrollProgress from "../components/ScrollProgress";
 import NeuralCanvas from "../components/NeuralCanvas";
+import Hud from "../components/Hud";
+import DecodeText from "../components/DecodeText";
 
 gsap.registerPlugin(SplitText, ScrollTrigger, ScrollSmoother);
 
@@ -37,7 +39,7 @@ export default function Home() {
       tl.from(".neural-canvas, .neural-fallback", { opacity: 0, duration: 1.6 })
         .from(".intro-text", { opacity: 0, y: -15, duration: 0.8 }, "-=1")
         .from(".headline-line", { y: 80, opacity: 0, duration: 1, stagger: 0.15 }, "-=0.6")
-        .from(".frame-corners .corner", { opacity: 0, scale: 0.5, duration: 0.6, stagger: 0.05 }, "-=0.4")
+        .from(".hud", { opacity: 0, duration: 0.8 }, "-=0.4")
         .from([".edge-label", ".hero-meta"], { opacity: 0, duration: 0.8 }, "-=0.3");
 
       heroTlRef.current = tl;
@@ -323,6 +325,7 @@ export default function Home() {
     <>
       {!loaderDone && <Loader onFinish={handleLoaderFinish} />}
       <NeuralCanvas />
+      <Hud />
       <CustomCursor />
       <ScrollProgress />
 
@@ -333,13 +336,7 @@ export default function Home() {
             <div className="hero-vignette" />
             <div className="grain-overlay" />
 
-            <div className="frame-corners">
-              <span className="corner corner-tl" />
-              <span className="corner corner-tr" />
-              <span className="corner corner-bl" />
-              <span className="corner corner-br" />
-            </div>
-            <div className="edge-label">FULL-STACK DEVELOPER</div>
+            <DecodeText as="div" className="edge-label" text="FULL-STACK DEVELOPER" hover={false} />
             <div className="hero-meta">
               <span className="hero-meta-item"><span className="status-dot" /> AVAILABLE FOR WORK</span>
               <span className="hero-meta-item hero-meta-scroll">SCROLL ↓</span>
@@ -392,7 +389,7 @@ export default function Home() {
             <div className="about-content">
               <div className="about-inner">
                 <div className="about-label-row">
-                  <p className="about-label">ABOUT ME</p>
+                  <DecodeText as="p" className="about-label" text="ABOUT ME" />
                   <span className="about-label-line" />
                 </div>
                 <p className="about-reveal-text">

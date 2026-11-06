@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Briefcase, Calendar, MapPin, Code2, Sparkles } from "lucide-react";
+import DecodeText from "./DecodeText";
 import "./Experience.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -339,7 +340,7 @@ export default function Experience() {
         <header className="exp-header">
           <div className="exp-header-label">
             <Sparkles size={14} className="exp-icon-sparkle" />
-            <span>CAREER PATH</span>
+            <DecodeText text="CAREER PATH" />
           </div>
           <h2 className="exp-header-title">Experience & Journey</h2>
           <p className="exp-header-sub">

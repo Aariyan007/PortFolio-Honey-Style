@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { X, ExternalLink } from "lucide-react";
+import DecodeText from "./DecodeText";
 import "./Projects.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -344,7 +345,7 @@ export default function ProjectsSection() {
         {/* ── header row: title LEFT + stats RIGHT ── */}
         <div className="projects-header-row">
           <header className="projects-header">
-            <p className="projects-eyebrow">SELECTED WORK — 2026</p>
+            <DecodeText as="p" className="projects-eyebrow" text="SELECTED WORK — 2026" />
             <h2 className="projects-title">
               <span className="title-line">Things I've</span>
               <span className="title-line">built & broken.</span>
