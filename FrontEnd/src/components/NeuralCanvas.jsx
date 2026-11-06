@@ -88,6 +88,7 @@ export default function NeuralCanvas({ onReady }) {
         const sync = () => {
           const smoother = ScrollSmoother.get();
           const y = smoother ? smoother.scrollTop() : window.scrollY;
+          if (!reduced) scene.setSurge(Math.abs(smoother?.getVelocity?.() ?? 0) / 2500);
           const f = resolveFormation(y, window.innerHeight, tops);
           const mix = reduced ? (f.mix >= 0.5 ? 1 : 0) : f.mix;
           const p = f.from + mix;

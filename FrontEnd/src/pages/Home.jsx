@@ -12,6 +12,7 @@ import Contact from "../components/Contact";
 import Loader from "../components/Loader";
 import CustomCursor from "../components/CustomCursor";
 import ScrollProgress from "../components/ScrollProgress";
+import MotionLayer from "../components/MotionLayer";
 import NeuralCanvas from "../components/NeuralCanvas";
 import Hud from "../components/Hud";
 import DecodeText from "../components/DecodeText";
@@ -327,6 +328,7 @@ export default function Home() {
     <>
       {!loaderDone && <Loader onFinish={handleLoaderFinish} ready={sceneReady} />}
       <NeuralCanvas onReady={handleSceneReady} />
+      <MotionLayer />
       <Hud />
       <Navbar />
       <CustomCursor />

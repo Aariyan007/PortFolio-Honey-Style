@@ -47,6 +47,8 @@ export default class NeuralScene {
     this.cameraBase = 8;
     this.clearScale = 1;
     this.dimTable = DIM;
+    this.surge = 0;
+    this.surgeTarget = 0;
     this.highlight = { cluster: -1, amount: 0, target: 0 };
     this.pointerTarget = { x: 0, y: 0 };
     this.px = 0;
@@ -174,6 +176,11 @@ export default class NeuralScene {
     }
   }
 
+  // 0..1 from scroll speed: the graph quickens while the page moves, then calms down slowly
+  setSurge(v) {
+    this.surgeTarget = Math.min(1, Math.max(0, v));
+  }
+
   #applyProgress() {
     const p = this.progress;
     const f = splitProgress(p, FORMATIONS);
@@ -267,7 +274,9 @@ export default class NeuralScene {
   render(dtMs = 0) {
     const dt = dtMs / 1000;
     if (this.animate) {
-      this.uniforms.uTime.value += dt;
+      const rising = this.surgeTarget > this.surge;
+      this.surge = damp(this.surge, this.surgeTarget, rising ? 3 : 0.8, dt);
+      this.uniforms.uTime.value += dt * (1 + this.surge * 2.5);
       this.progress = damp(this.progress, this.target, MORPH_RATE, dt);
     }
     this.#applyProgress();

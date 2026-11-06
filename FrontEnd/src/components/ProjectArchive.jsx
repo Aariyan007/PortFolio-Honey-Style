@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
 import { ArrowUpRight } from "lucide-react";
 import { CATEGORIES } from "../data/projects";
 import "./ProjectArchive.css";
 
 export default function ProjectArchive({ items, onOpen }) {
   const [filter, setFilter] = useState("all");
+  const listRef = useRef(null);
+  const firstRun = useRef(true);
 
   const counts = useMemo(
     () => Object.fromEntries(
@@ -16,6 +19,23 @@ export default function ProjectArchive({ items, onOpen }) {
     () => (filter === "all" ? items : items.filter((p) => p.category === filter)),
     [items, filter],
   );
+
+  // rows cascade in the first time the list scrolls into view, then again on every filter change
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const rows = list.querySelectorAll(".parchive-row");
+    const from = { opacity: 0, y: 14 };
+    const to = { opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: "power2.out" };
+    const tween = firstRun.current
+      ? gsap.fromTo(rows, from, { ...to, scrollTrigger: { trigger: list, start: "top 85%", once: true } })
+      : gsap.fromTo(rows, from, to);
+    firstRun.current = false;
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
+  }, [filter]);
 
   return (
     <div className="parchive">
@@ -37,7 +57,7 @@ export default function ProjectArchive({ items, onOpen }) {
         </div>
       </div>
 
-      <ul className="parchive-list">
+      <ul className="parchive-list" ref={listRef}>
         {visible.map((p) => {
           const cells = (
             <>
