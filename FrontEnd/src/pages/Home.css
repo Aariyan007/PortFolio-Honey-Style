@@ -1,12 +1,13 @@
 .home {
   position: relative;
   min-height: 100vh;
-  background: var(--color-bg);
+  background: transparent;
   overflow: hidden;
 }
 
 /* ─── ScrollSmoother wrapper ─── */
 #smooth-wrapper {
+  z-index: 1;
   overflow: hidden;
   position: fixed;
   height: 100vh;
@@ -20,33 +21,6 @@
   width: 100%;
 }
 
-/* wraps the video so GSAP parallax (transform on the wrap) and the
-   CSS zoom keyframe (transform on the video) don't fight over the
-   same property on the same element */
-.hero-video-wrap {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.hero-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: heroZoom 22s ease-in-out infinite alternate;
-}
-
-@keyframes heroZoom {
-  from {
-    transform: scale(1);
-  }
-
-  to {
-    transform: scale(1.08);
-  }
-}
-
 /* dark gradient over the video so nav/headline stay readable —
    since the footage is light, this is doing the contrast work
    that mix-blend-mode: screen would've done on black footage */
@@ -54,11 +28,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.6) 0%,
-      rgba(0, 0, 0, 0.25) 30%,
-      rgba(0, 0, 0, 0.35) 60%,
-      rgba(0, 0, 0, 0.85) 100%);
+  background: linear-gradient(to bottom, rgba(10, 10, 10, 0.55) 0%, transparent 30%, transparent 65%, rgba(10, 10, 10, 0.8) 100%);
 }
 
 /* vignette — darkens edges/corners, keeps center clear. */
@@ -293,7 +263,7 @@
 .about-section {
   position: relative;
   min-height: 100vh;
-  background: var(--color-bg);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -709,4 +679,17 @@
   transform: scaleY(0);
   margin-top: -2px;
   /* ensure no gap */
+}
+/* small text sits over the brightest part of the node cloud: a dark halo keeps it legible */
+.intro-text {
+  position: relative;
+  text-shadow: 0 0 2px rgba(10, 10, 10, 0.95), 0 0 10px rgba(10, 10, 10, 0.9), 0 0 24px rgba(10, 10, 10, 0.8);
+}
+.intro-text::before {
+  content: "";
+  position: absolute;
+  inset: -40px -90px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(10, 10, 10, 0.72), rgba(10, 10, 10, 0.35) 60%, transparent);
 }

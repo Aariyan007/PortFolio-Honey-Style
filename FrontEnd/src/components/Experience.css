@@ -2,7 +2,7 @@
 .experience-section {
   position: relative;
   min-height: 100vh;
-  background: #0d0d11;
+  background: transparent;
   padding: 140px 40px 160px;
   overflow: hidden;
   color: var(--color-text);
@@ -224,11 +224,11 @@
 .exp-card {
   position: relative;
   width: calc(50% - 48px);
-  background: rgba(255, 255, 255, 0.02);
+  /* opaque glass, no backdrop-filter: blurring the live canvas re-renders every frame */
+  background: rgba(16, 16, 20, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   padding: 32px;
-  backdrop-filter: blur(12px);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
@@ -487,4 +487,10 @@
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+.exp-timeline-thread-fill { filter: drop-shadow(0 0 6px rgba(var(--color-accent-rgb), 0.8)); }
+.exp-node .exp-node-inner { transition: background 0.4s ease, box-shadow 0.4s ease; }
+.exp-node.is-lit .exp-node-inner {
+  background: var(--color-accent);
+  box-shadow: 0 0 18px 4px rgba(var(--color-accent-rgb), 0.7);
 }

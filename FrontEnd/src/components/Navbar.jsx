@@ -3,6 +3,9 @@ import { createPortal } from "react-dom";
 import { Mail, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
+import DecodeText from "./DecodeText";
+import useActiveSection from "../hooks/useActiveSection";
+import { SECTIONS, SECTION_IDS } from "../data/sections";
 import "./Navbar.css";
 
 gsap.registerPlugin(ScrollSmoother);
@@ -26,11 +29,28 @@ function scrollToTarget(target) {
   }
 }
 
+const NAV = SECTIONS.filter((s) => s.nav);
+
 export default function Navbar() {
   const navRef = useRef(null);
   const contactOverlayRef = useRef(null);
   const contactCardRef = useRef(null);
   const [contactOpen, setContactOpen] = useState(false);
+  const linksRef = useRef(null);
+  const indicatorRef = useRef(null);
+  const active = useActiveSection(SECTION_IDS);
+  const activeId = SECTION_IDS[active];
+
+  useEffect(() => {
+    const indicator = indicatorRef.current;
+    const link = linksRef.current?.querySelector(`[data-section="${activeId}"]`);
+    if (!indicator) return;
+    if (!link) {
+      gsap.to(indicator, { opacity: 0, duration: 0.3 });
+      return;
+    }
+    gsap.to(indicator, { x: link.offsetLeft, width: link.offsetWidth, opacity: 1, duration: 0.5, ease: "power3.out" });
+  }, [activeId]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -142,9 +162,9 @@ export default function Navbar() {
     scrollToTarget(0);
   };
 
-  const handleProjectsClick = (e) => {
+  const handleSectionClick = (e, id) => {
     e.preventDefault();
-    const target = document.querySelector("#projects-section");
+    const target = document.getElementById(id);
     if (target) scrollToTarget(target);
   };
 
@@ -158,29 +178,27 @@ export default function Navbar() {
           <span className="navbar-year">2026</span>
         </div>
 
-        <nav className="navbar-links">
-          <a href="mailto:aariyansunu28@gmail.com" className="navbar-link">
-            <Mail size={13} className="navbar-icon" />
-            AARIYANSUNU28@GMAIL.COM
-          </a>
-
-          <a href="#projects-section" className="navbar-link" onClick={handleProjectsClick}>
-            PROJECTS
-          </a>
-
-          <a
-            href="https://www.linkedin.com/in/aariyan-s/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="navbar-link"
-          >
+        <nav className="navbar-links" ref={linksRef}>
+          <span className="navbar-indicator" ref={indicatorRef} aria-hidden="true" />
+          {NAV.map((s) => (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              data-section={s.id}
+              className={`navbar-link${activeId === s.id ? " is-active" : ""}`}
+              onClick={(e) => handleSectionClick(e, s.id)}
+            >
+              <DecodeText text={s.label} />
+            </a>
+          ))}
+          <a href="https://www.linkedin.com/in/aariyan-s/" target="_blank" rel="noopener noreferrer" className="navbar-link">
             <LinkedinIcon className="navbar-icon" />
-            LINKEDIN
+            <DecodeText text="LINKEDIN" />
           </a>
         </nav>
 
         <div className="navbar-button">
-          <button type="button" className="navbar-cta" onClick={() => setContactOpen(true)}>
+          <button type="button" className="navbar-cta" data-magnetic onClick={() => setContactOpen(true)}>
             CONTACT ME
           </button>
         </div>

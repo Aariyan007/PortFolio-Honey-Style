@@ -1,0 +1,16 @@
+.neural-canvas,
+.neural-fallback {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100lvh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.neural-fallback {
+  background:
+    radial-gradient(60% 50% at 50% 45%, rgba(var(--color-accent-rgb), 0.18), transparent 70%),
+    var(--color-bg);
+}

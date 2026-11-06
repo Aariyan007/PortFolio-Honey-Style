@@ -63,3 +63,16 @@
   background: var(--color-text-dim, rgba(255, 255, 255, 0.5));
   transform-origin: center;
 }
+.loader-boot {
+  position: absolute;
+  left: 50%;
+  bottom: 12vh;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: var(--font-hud);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--color-accent-rgb), 0.85);
+}
