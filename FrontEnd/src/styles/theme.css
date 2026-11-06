@@ -1,17 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 :root {
   --color-bg: #0a0a0a;
   --color-text: #edebe6;
-  --color-text-dim: #6b6b6b;
-  --color-accent: #ff3b30;
-  /* RGB form of accent colors so components can derive rgba(...) with alpha */
-  --color-accent-rgb: 255, 59, 48;
+  --color-text-dim: #8a8a8a;
+  --color-accent: #f59e0b;
+  --color-accent-rgb: 245, 158, 11;
   --color-accent-secondary: #ff8c42;
   --color-accent-secondary-rgb: 255, 140, 66;
+  --color-hot: #ff3b30;
+  --color-hot-rgb: 255, 59, 48;
 
-  --font-display: 'Archivo', 'Inter Tight', sans-serif;
-  --font-mono: 'Space Grotesk', monospace;
+  --font-display: 'Archivo', sans-serif;
+  --font-mono: 'Space Grotesk', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-hud: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 * {

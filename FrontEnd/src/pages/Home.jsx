@@ -68,15 +68,16 @@ export default function Home() {
   useEffect(() => {
     if (!loaderDone) return;
 
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let removeContactHoverListeners = () => { };
     let removeContactMagnetic = () => { };
 
     const smoother = ScrollSmoother.create({
       wrapper: wrapperRef.current,
       content: contentRef.current,
-      smooth: 1.0,
-      effects: true,
-      smoothTouch: 0.1,
+      smooth: reduced ? 0 : 1.0,
+      effects: !reduced,
+      smoothTouch: false,
     });
 
     const ctx = gsap.context(() => {
@@ -180,21 +181,9 @@ export default function Home() {
         transformOrigin: "left center",
       });
 
-      gsap.from(".projects-eyebrow, .projects-title .title-line, .projects-intro", {
-        y: 40,
-        opacity: 0,
-        duration: 0.9,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".projects-section", start: "top 75%" },
-      });
-
-      gsap.to(".projects-header-line", {
-        scaleX: 1,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".projects-section", start: "top 75%" },
-      });
+      gsap.timeline({ scrollTrigger: { trigger: ".projects-section", start: "top 75%" }, defaults: { ease: "power3.out" } })
+        .from(".projects-eyebrow, .projects-title .title-line, .projects-intro", { y: 40, opacity: 0, duration: 0.9, stagger: 0.1 })
+        .to(".projects-header-line", { scaleX: 1, duration: 0.9 }, 0);
 
       gsap.fromTo(
         ".projects-watermark",
@@ -241,14 +230,16 @@ export default function Home() {
         });
       });
 
-      // ── contact section extras: watermark, glow, rule draw-in ──
-      gsap.to([".contact-rule--top", ".contact-rule--mid"], {
-        scaleX: 1,
-        duration: 1,
-        ease: "power3.out",
-        stagger: 0.15,
-        scrollTrigger: { trigger: ".contact-section", start: "top 85%" },
-      });
+      // ── contact section: one reveal timeline + watermark scrub ──
+      gsap.timeline({ scrollTrigger: { trigger: ".contact-section", start: "top 75%" }, defaults: { ease: "power3.out" } })
+        .to([".contact-rule--top", ".contact-rule--mid"], { scaleX: 1, duration: 1, stagger: 0.15 }, 0)
+        .fromTo(".contact-glow", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 1.4, ease: "power2.out" }, 0)
+        .from(".contact-eyebrow", { y: 24, opacity: 0, duration: 0.8 }, 0)
+        .from(".contact-line", { y: 60, opacity: 0, duration: 1, stagger: 0.12 }, 0.2)
+        .from(".contact-sub", { y: 30, opacity: 0, duration: 0.8 }, 0.5)
+        .from(".contact-section .contact-email", { y: 30, opacity: 0, duration: 0.8 }, 0.6)
+        .from(".contact-social-link", { y: 20, opacity: 0, stagger: 0.08, duration: 0.6, ease: "power2.out" }, 0.75)
+        .from(".contact-section .contact-footer", { opacity: 0, y: 16, duration: 0.6, ease: "power2.out" }, 0.9);
 
       gsap.fromTo(
         ".contact-watermark",
@@ -258,18 +249,6 @@ export default function Home() {
           opacity: 1,
           ease: "none",
           scrollTrigger: { trigger: ".contact-section", start: "top bottom", end: "bottom top", scrub: true },
-        }
-      );
-
-      gsap.fromTo(
-        ".contact-glow",
-        { scale: 0.7, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 1.4,
-          ease: "power2.out",
-          scrollTrigger: { trigger: ".contact-section", start: "top 70%" },
         }
       );
 
@@ -317,42 +296,6 @@ export default function Home() {
         });
         removeContactMagnetic = () => magneticCleanups.forEach((fn) => fn());
       }
-
-      // contact section reveal animations
-      gsap.from(".contact-eyebrow", {
-        y: 24, opacity: 0, duration: 0.8, ease: "power3.out",
-        scrollTrigger: { trigger: ".contact-section", start: "top 75%" },
-      });
-
-      gsap.from(".contact-line", {
-        y: 60, opacity: 0,
-        duration: 1, stagger: 0.12, ease: "power3.out",
-        scrollTrigger: { trigger: ".contact-headline", start: "top 82%" },
-      });
-
-      gsap.from(".contact-sub", {
-        y: 30, opacity: 0,
-        duration: 0.8, ease: "power3.out",
-        scrollTrigger: { trigger: ".contact-headline", start: "top 72%" },
-      });
-
-      gsap.from(".contact-email", {
-        y: 30, opacity: 0,
-        duration: 0.8, ease: "power3.out",
-        scrollTrigger: { trigger: ".contact-email", start: "top 88%" },
-      });
-
-      gsap.from(".contact-social-link", {
-        y: 20, opacity: 0, stagger: 0.08,
-        duration: 0.6, ease: "power2.out",
-        scrollTrigger: { trigger: ".contact-socials", start: "top 90%" },
-      });
-
-      gsap.from(".contact-footer", {
-        opacity: 0, y: 16,
-        duration: 0.6, ease: "power2.out",
-        scrollTrigger: { trigger: ".contact-footer", start: "top 98%" },
-      });
 
       const scrollCue = document.querySelector(".hero-meta-scroll");
       if (scrollCue) {
